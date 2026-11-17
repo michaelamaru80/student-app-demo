@@ -1116,70 +1116,85 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
   <!-- ============ SIMULATE (prototype only) ============ -->
   <button type="button" class="proto-trigger" aria-expanded="{{proto.open}}" onClick="{{proto.toggle}}" style="position: absolute; left: 24px; bottom: 12px; z-index: 81; padding: 2px 6px; border: 0; background: none; color: #000000; opacity: 0.55; cursor: pointer">Simulate</button>
   <sc-if value="{{proto.open}}" hint-placeholder-val="{{false}}">
-    <aside class="proto" aria-label="Prototype controls" style="position: absolute; left: 24px; bottom: 40px; z-index: 82; width: 252px; padding: 10px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px">
+    <aside class="proto" aria-label="Prototype controls" style="position: absolute; left: 24px; bottom: 40px; z-index: 82; width: 284px; padding: 10px; box-sizing: border-box; display: flex; flex-direction: column; gap: 6px">
       <div style="font-weight: 600">Prototype only</div>
       <div role="tablist" aria-label="Prototype panel" style="display: flex; gap: 12px; border-bottom: 1px solid #3C3C3C; margin: 0 -10px 2px; padding: 0 10px">
         <sc-for list="{{proto.tabs}}" as="t" hint-placeholder-count="3">
           <button type="button" role="tab" aria-selected="{{t.on}}" class="{{t.cls}}" onClick="{{t.go}}" style="border: 0; background: none; font: inherit; padding: 4px 0; cursor: pointer">{{t.label}}</button>
         </sc-for>
       </div>
+      <sc-if value="{{proto.tabCtl}}" hint-placeholder-val="{{true}}">
+        <span>Jordan</span>
+        <sc-for list="{{proto.near}}" as="b" hint-placeholder-count="4">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>In line</span>
+        <sc-if value="{{proto.inLine}}" hint-placeholder-val="{{false}}">
+          <sc-for list="{{proto.line}}" as="b" hint-placeholder-count="3">
+            <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" disabled="{{b.off}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{proto.notInLine}}" hint-placeholder-val="{{true}}">
+          <span style="color: #8A8A8A">Check in first to use these</span>
+        </sc-if>
+        <span>New mail</span>
+        <sc-for list="{{proto.mailNew}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" disabled="{{b.off}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>What's waiting</span>
+        <sc-for list="{{proto.data}}" as="b" hint-placeholder-count="3">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Booking</span>
+        <sc-for list="{{proto.book}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Location permission</span>
+        <sc-for list="{{proto.perm}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <button type="button" class="uu-btn" data-tip="Back to the start: Home, all spots, 1.2 mi from Hollis Hall, no booking, not headed anywhere, default school color and logo." onClick="{{proto.reset}}" style="background: none; margin-top: 8px">Reset prototype</button>
+      </sc-if>
+      <sc-if value="{{proto.tabSchool}}" hint-placeholder-val="{{false}}">
+        <span>School color</span>
+        <sc-for list="{{proto.colors}}" as="b" hint-placeholder-count="9">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Logo</span>
+        <sc-for list="{{proto.logo}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Mailroom hours</span>
+        <sc-for list="{{proto.hours}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Booking window (schedule pickup)</span>
+        <sc-for list="{{proto.win}}" as="b" hint-placeholder-count="3">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Lockers in a building (unconfirmed)</span>
+        <sc-for list="{{proto.lockers}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Student name (layout test)</span>
+        <sc-for list="{{proto.names}}" as="b" hint-placeholder-count="2">
+          <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <button type="button" class="uu-btn" data-tip="Back to the start: Home, all spots, 1.2 mi from Hollis Hall, no booking, not headed anywhere, default school color and logo." onClick="{{proto.reset}}" style="background: none; margin-top: 8px">Reset prototype</button>
+      </sc-if>
       <sc-if value="{{proto.tabCp}}" hint-placeholder-val="{{false}}">
         <span>Jump to a moment (starts clean)</span>
         <sc-for list="{{proto.cps}}" as="b" hint-placeholder-count="12">
           <button type="button" class="uu-btn" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
         </sc-for>
+        <button type="button" class="uu-btn" data-tip="Back to the start: Home, all spots, 1.2 mi from Hollis Hall, no booking, not headed anywhere, default school color and logo." onClick="{{proto.reset}}" style="background: none; margin-top: 8px">Reset prototype</button>
       </sc-if>
       <sc-if value="{{proto.tabErr}}" hint-placeholder-val="{{false}}">
         <span>Errors the app handles (starts clean)</span>
         <sc-for list="{{proto.errs}}" as="b" hint-placeholder-count="2">
           <button type="button" class="uu-btn" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
         </sc-for>
-      </sc-if>
-      <sc-if value="{{proto.tabCtl}}" hint-placeholder-val="{{true}}">
-      <span>The mailroom</span>
-      <sc-for list="{{proto.mail}}" as="b" hint-placeholder-count="3">
-        <button type="button" class="uu-btn" data-tip="{{b.tip}}" disabled="{{b.off}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Jordan is</span>
-      <sc-for list="{{proto.near}}" as="b" hint-placeholder-count="3">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Location permission</span>
-      <sc-for list="{{proto.perm}}" as="b" hint-placeholder-count="2">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Waiting for Jordan</span>
-      <sc-for list="{{proto.data}}" as="b" hint-placeholder-count="3">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Lockers in a building</span>
-      <sc-for list="{{proto.lockers}}" as="b" hint-placeholder-count="2">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Mailroom hours (school setting)</span>
-      <sc-for list="{{proto.hours}}" as="b" hint-placeholder-count="2">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Booking window (school setting)</span>
-      <sc-for list="{{proto.win}}" as="b" hint-placeholder-count="3">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Booked window</span>
-      <sc-for list="{{proto.book}}" as="b" hint-placeholder-count="3">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>Student name</span>
-      <sc-for list="{{proto.names}}" as="b" hint-placeholder-count="2">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <span>School branding</span>
-      <sc-for list="{{proto.colors}}" as="b" hint-placeholder-count="9">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <sc-for list="{{proto.logo}}" as="b" hint-placeholder-count="2">
-        <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
-      </sc-for>
-      <button type="button" class="uu-btn" data-tip="Back to the start: Home, all spots, 1.2 mi from Hollis Hall, no booking, not headed anywhere" onClick="{{proto.reset}}" style="background: none; margin-top: 4px">Reset</button>
+        <button type="button" class="uu-btn" data-tip="Back to the start: Home, all spots, 1.2 mi from Hollis Hall, no booking, not headed anywhere, default school color and logo." onClick="{{proto.reset}}" style="background: none; margin-top: 8px">Reset prototype</button>
       </sc-if>
     </aside>
   </sc-if>
@@ -1202,11 +1217,13 @@ class Component extends DCLogic {
   arrivalBeat() {
     const x = this.state;
     if (x.locOff || x.dist > 0.3 || x.q || x.heading) return;
-    const n = (x.items || []).filter((i) => i.spot === 'hollis' && i.status === 'ready').length;
+    // Arrival works at any place: the place Jordan is measured from (st.base, Hollis Hall by default).
+    const base = x.base || 'hollis', names = { hollis: 'Hollis Hall', baker: 'Baker Hall', wq: 'West Quad Lockers', north: 'North Campus' };
+    const n = (x.items || []).filter((i) => i.spot === base && i.status === 'ready').length;
     if (!n) return;
     // App is open, so this is an in-app dark toast at the bottom (not an iOS push banner).
     clearTimeout(this._toastT);
-    this.setState({ beatAt: Date.now(), toast: { text: "You're near Hollis Hall", variant: 'info', act: 'near' } });
+    this.setState({ beatAt: Date.now(), toast: { text: "You're near " + names[base], variant: 'info', act: 'near' } });
     this._toastT = setTimeout(() => this.setState({ toast: null }), 6000);
   }
   // Simulate › Checkpoints and Errors: reset, then set up one moment using the product's own state and functions.
@@ -1220,7 +1237,7 @@ class Component extends DCLogic {
     switch (k) {
       case 'c1': return set({});
       case 'c2': return set(spot);
-      case 'c3': return set(sheet('items'));
+      case 'c3': return set(sheet('choose'));
       case 'c4': return set(sheet('perm'));
       case 'c5': return set(sheet('heading', { dist: 0.8, permAsked: true, heading: { spot: 'hollis', ids: H, started: '12:40 PM', startDist: 0.8 } }));
       case 'c6': return set({ dist: 0.2, permAsked: true }, () => this.arrivalBeat());
@@ -1234,7 +1251,7 @@ class Component extends DCLogic {
       case 'c10': return set({ stack: [{ v: 'spot', id: 'hollis' }, { v: 'busy', id: 'hollis' }], busyDay: 'thu', busyHour: 6 });
       case 'c11': return set({ booking: { spot: 'hollis', day: 'thu', hour: 6, remind: true, now: false, ids: H } });
       case 'c12': return set({ stack: [{ v: 'item', id: 'l1' }] });
-      case 'e1': set(sheet('items', { skip: { a1: true, a2: true }, selWarn: true })); this._selT = setTimeout(() => this.setState({ selWarn: false }), 2500); return;
+      case 'e1': set(Object.assign({}, spot, { skip: { a1: true, a2: true }, selWarn: true })); this._selT = setTimeout(() => this.setState({ selWarn: false }), 2500); return;
       case 'e2': return set(sheet('locating', { locOff: true }), () => this.startLocating('hollis'));
     }
   }
@@ -1276,7 +1293,7 @@ class Component extends DCLogic {
       q: null, done: null, booking: null, busyDay: 'thu', busyHour: null, remind: true,
       filter: 'all', notif: { push: true, sms: true, email: false }, toast: null, protoOpen: false, nextTicket: 118,
       heading: null, pstep: 'choose', pspot: null, pmode: 'pickup', permAsked: false, perm: 'always', notice: null, editBk: false,
-      brandColor: null, logo: true, nameLen: 'short'
+      brandColor: null, logo: true, nameLen: 'short', base: 'hollis'
     };
   }
   // Auto check-in: the student crossed 0.3 mi while headed there.
@@ -1290,10 +1307,11 @@ class Component extends DCLogic {
     this.setState({
       heading: null, q: { spot: h.spot, ids: h.ids, pos, start: pos, ticket, state: 'queued', priority: onTime },
       nextTicket: st.nextTicket + 1, dist: newDist != null ? newDist : st.dist, protoOpen: false,
-      notice: fromNear ? { title: 'Ticket ' + ticket + ' · ' + names[h.spot], body: 'You’re checked in, #' + pos + ' in line. Tap to see what you’re picking up.' } : null,
-      sheet: fromNear && st.sheet !== 'onway' ? null : 'checkedin', ticketAgain: false
+      notice: null,
+      // The app is on screen in the prototype, so every check-in opens the sheet (the push banner is for a closed app, not modeled).
+      sheet: 'checkedin', ticketAgain: false
     });
-    if (fromNear) this._noticeT = setTimeout(() => this.setState({ notice: null }), 7000);
+
   }
 
   // Find the student's location, then start heading there (or check in if already within 0.3 mi).
@@ -1305,8 +1323,10 @@ class Component extends DCLogic {
       if (s2.locOff) { this.setState({ pstep: 'off' }); return; }
       const ids = s2.items.filter((i) => i.spot === sp && i.status === 'ready' && !s2.skip[i.id]).map((i) => i.id);
       const clock = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-      this.setState({ heading: { spot: sp, ids, started: clock, startDist: Math.round((s2.dist + ({ hollis: 0, baker: 0.4, wq: 0.6, north: 0.6 }[sp] ?? 0.6)) * 10) / 10 }, skip: {} }, () => {
-        if (s2.dist <= 0.3 && sp === 'hollis') this.arrive(false);
+      // Distances are measured from the place Jordan heads to, so arrival works at any place.
+      const d = Math.round((s2.dist + (sp === (s2.base || 'hollis') ? 0 : ({ hollis: 0.4, baker: 0.4, wq: 0.6, north: 0.6 }[sp] ?? 0.6))) * 10) / 10;
+      this.setState({ base: sp, dist: d, heading: { spot: sp, ids, started: clock, startDist: d }, skip: {} }, () => {
+        if (d <= 0.3) this.arrive(false);
         else this.setState({ pstep: 'heading' });
       });
     }, 1600);
@@ -1425,10 +1445,11 @@ class Component extends DCLogic {
     const items = st.items;
     const at = (sid, status) => items.filter((i) => i.spot === sid && (!status || i.status === status));
     const nearK = st.locOff ? 'off' : st.dist <= 0.3 ? 'near' : 'far';
-    const distOf = (sid) => Math.round((st.dist + ({ hollis: 0, baker: 0.4, wq: 0.6, north: 0.6 }[sid] ?? 0.6)) * 10) / 10;
+    const baseSid = st.base || 'hollis';
+    const distOf = (sid) => Math.round((st.dist + (sid === baseSid ? 0 : ({ hollis: 0.4, baker: 0.4, wq: 0.6, north: 0.6 }[sid] ?? 0.6))) * 10) / 10;
     const distTxt = (sid) => (st.locOff ? 'Location off' : distOf(sid).toFixed(1) + ' mi away');
     const walkTxt = (sid) => { const m = Math.max(1, Math.round(distOf(sid) * 20)); return 'about ' + m + ' min walk'; };
-    const inRange = (sid) => sid === 'hollis' && nearK === 'near';
+    const inRange = (sid) => sid === baseSid && nearK === 'near';
     const top = st.stack.length ? st.stack[st.stack.length - 1] : null;
     const view = top ? top.v : null;
     const go = (patch) => () => this.setState(Object.assign({ protoOpen: false }, patch));
@@ -1616,7 +1637,7 @@ class Component extends DCLogic {
       heading: !q && !st.done && !!hdg,
       hasSpotLink: !!(q || hdg), hasFooter: !!(q || hdg || st.done), spotLink: 'View ' + ((q || hdg) ? SPOTS[(q || hdg).spot].short : ''),
       openSpot: () => { const t = q || hdg; if (t) this.setState({ stack: [{ v: 'spot', id: t.spot }] }); },
-      sheetTitle: st.ticketAgain ? 'Your ticket' : 'You’re checked in',
+      sheetTitle: 'You’re checked in',
       sheetSpot: () => { if (q) this.setState({ sheet: null, stack: [{ v: 'spot', id: q.spot }] }); },
       // Only when there's something else at this place: items left for later, being processed, or in a locker there.
       hasOther: !!q && items.some((i) => i.spot === q.spot && !q.ids.includes(i.id)),
@@ -1960,16 +1981,18 @@ class Component extends DCLogic {
     ];
     mailBtns.push({ label: 'New item ready at Hollis Hall', tip: 'A Target box is shelved after Jordan booked. It shows under Also ready here, not in the booking', off: items.some((i) => i.id === 'n1'), go: () => this.setState(Object.assign({}, close, { items: items.concat([{ id: 'n1', at: '10201240', from: 'Target', carrier: 'UPS', trk: '1Z77X0090321449099', size: 'Small box', spot: 'hollis', status: 'ready', arrived: 'Today · 12:40 PM', notes: [] }]) })) });
     mailBtns.push({ label: 'Locker code expires today', tip: "Mom's box in " + (st.combined ? 'Hollis Hall' : 'West Quad') + " locker 14B is due today at 4 PM", off: !items.some((i) => i.id === 'l1' && !i.dueToday), go: () => this.setState(Object.assign({}, close, { items: items.map((i) => (i.id === 'l1' ? Object.assign({}, i, { dueToday: true, until: 'today 4 PM', untilLong: 'Today, Oct 20 · 4:05 PM' }) : i)) })) });
-    const NEAR = [[1.2, '1.2 mi away', 'Where Jordan starts'], [0.8, '0.8 mi away', 'On his way'], [0.5, '0.5 mi away', 'Almost in range'], [0.2, 'At Hollis Hall (0.2 mi)', 'Inside 0.3 mi. If Jordan is headed there, this checks him in'], ['off', 'Location off', 'Phone location turned off']];
+    // Simulate › Controls › Jordan: Walk closer covers the in-between distances (checkpoints set the start).
+    const NEAR = [['arrive', 'Arrive at pickup location', "Within 0.3 mi of where Jordan is headed (or the top place with items ready). Headed there = checked in"], [1.2, 'Back to 1.2 mi away', 'Where Jordan starts, measured from Hollis Hall'], ['off', 'Location off', 'Phone location turned off']];
+    const arriveSpot = hdg ? hdg.spot : (ORDER.find((sid) => at(sid, 'ready').length) || 'hollis');
     const DATA = [['full', 'Items at 4 places', 'Hollis Hall and Baker Hall (mailrooms), West Quad (lockers), North Campus (processing)'], ['lockers', 'Only locker items', 'Locker items only (14B and 07A)'], ['none', 'Nothing waiting', 'Empty states']];
     // Checkpoints: each one starts clean (same as Reset), then sets up that moment on the real screen.
     const CHECKPOINTS = [
-      ['c1', "1 · See what's waiting", 'Home with items at 4 places, 1.2 mi from Hollis Hall'],
-      ['c2', '2 · Look at Hollis Hall', 'Hollis Hall page: 3 ready, 2 being processed'],
-      ['c3', '3 · Choose items to pick up', 'Hollis Hall page with the Pick up sheet, all 3 selected'],
+      ['c1', '1 · Start on Home', 'Back to the beginning: Home with items at 4 places, 1.2 mi from Hollis Hall, nothing booked'],
+      ['c2', '2 · Hollis Hall details', 'The page you get by tapping the Hollis Hall card: 3 ready, 2 being processed'],
+      ['c3', '3 · Pick up now or schedule', 'Hollis Hall page with the Pick up sheet: picking up 3 items, Pick up now or Schedule a time'],
       ['c4', '4 · Allow location', 'Pick up sheet on the location permission step'],
       ['c5', '5 · Headed there', "Pick up sheet on You're all set, 0.8 mi away"],
-      ['c6', '6 · Arriving', "At Hollis Hall: Check in pulses and the You're near Hollis Hall toast shows"],
+      ['c6', '6 · Arrived at pickup location', "Within 0.3 mi of Hollis Hall, not headed there: Check in pulses and the You're near toast shows"],
       ['c7', '7 · Checked in', "You're checked in sheet: ticket A118, #6 in line"],
       ['c8', '8 · Your turn', 'Called to Window 2, Home shows your turn'],
       ['c9', '9 · Just picked up', 'Pickup complete at Window 2; items moved to Picked up'],
@@ -1978,25 +2001,34 @@ class Component extends DCLogic {
       ['c12', '12 · Get a locker item', "Item details for Mom's box with locker 14B and its code"]
     ];
     const ERRORS = [
-      ['e1', '1 · Keep one item selected', 'Pick up sheet with one item left, trying to unselect it'],
+      ['e1', '1 · Keep one item selected', 'Hollis Hall page with one item left checked, after trying to uncheck it'],
       ['e2', '2 · Location is off', 'Pick up now with phone location off']
     ].map(([k, l, t]) => [k, 'E' + l, t]);
-    const BOOK = [['none', 'No booking', 'Jordan has not booked a time'], ['later', 'Booked Thu 4–5 PM', 'A booking later this week at Hollis Hall'], ['now', 'Booked window is now', 'Booked today 12–1 PM; arriving now is on time']];
+    const BOOK = [['none', 'No booking', 'Jordan has not booked a time'], ['now', 'Booked window is now', 'Booked today 12–1 PM; arriving now is on time']];
     const bookKey = !bkg ? 'none' : bkg.now ? 'now' : 'later';
     const proto = {
       open: st.protoOpen, toggle: () => this.setState({ protoOpen: !st.protoOpen }),
-      tabs: [['controls', 'Controls'], ['checkpoints', 'Checkpoints'], ['errors', 'Errors']].map(([k, l]) => ({ label: l, on: (st.simTab || 'controls') === k, cls: (st.simTab || 'controls') === k ? 'proto-tab on' : 'proto-tab', go: () => this.setState({ simTab: k }) })),
-      tabCtl: (st.simTab || 'controls') === 'controls', tabCp: st.simTab === 'checkpoints', tabErr: st.simTab === 'errors',
+      tabs: [['controls', 'Controls'], ['checkpoints', 'Checkpoints'], ['errors', 'Errors'], ['school', 'Customize']].map(([k, l]) => ({ label: l, on: (st.simTab || 'controls') === k, cls: (st.simTab || 'controls') === k ? 'proto-tab on' : 'proto-tab', go: () => this.setState({ simTab: k }) })),
+      tabCtl: (st.simTab || 'controls') === 'controls', tabCp: st.simTab === 'checkpoints', tabErr: st.simTab === 'errors', tabSchool: st.simTab === 'school',
+      // Line controls only while Jordan is in line; new-mail events stay available.
+      inLine: !!q, notInLine: !q, line: mailBtns.slice(0, 3), mailNew: mailBtns.slice(3),
       cps: CHECKPOINTS.map(([k, l, t]) => ({ label: l, tip: t, go: () => this.jump(k) })),
       errs: ERRORS.map(([k, l, t]) => ({ label: l, tip: t, go: () => this.jump(k) })),
       mail: mailBtns,
-      near: [{ label: 'Walk closer (−0.3 mi)', tip: 'Jordan moves 0.3 mi closer to Hollis Hall', on: false, walk: true }].concat(NEAR.map(([k, l, t]) => ({ label: l, tip: t, d: k }))).map((b) => {
-        const target = b.walk ? Math.max(0.2, Math.round((st.dist - 0.3) * 10) / 10) : b.d;
+      near: [{ label: 'Walk closer (−0.2 mi)', tip: 'Jordan moves 0.2 mi closer to ' + SPOTS[baseSid].name + '. The step into 0.3 mi arrives (checks in if headed there)', on: false, walk: true }].concat(NEAR.map(([k, l, t]) => ({ label: l, tip: t, d: k }))).map((b) => {
+        // Walk closer moves 0.2 mi per tap so the bar visibly grows; the tap into 0.3 mi arrives, same as Arrive at pickup location.
+        const target = b.walk ? Math.max(0.2, Math.round((st.dist - 0.2) * 10) / 10) : b.d === 'arrive' ? 0.2 : b.d;
         return {
-          label: b.label, tip: b.tip, on: !b.walk && (b.d === 'off' ? st.locOff : !st.locOff && st.dist === b.d),
+          label: b.label, tip: b.tip, on: !b.walk && b.d !== 'arrive' && (b.d === 'off' ? st.locOff : !st.locOff && st.dist === b.d && (b.d !== 1.2 || baseSid === 'hollis')),
           go: () => {
             if (target === 'off') { this.setState({ locOff: true, protoOpen: false }); return; }
-            if (target <= 0.3 && st.heading && st.heading.spot === 'hollis') { this.setState({ locOff: false }); this.arrive(true, target); return; }
+            if (b.d === 'arrive') {
+              if (st.heading && st.heading.spot === arriveSpot) { this.setState({ base: arriveSpot, locOff: false }, () => this.arrive(true, 0.2)); return; }
+              this.setState({ base: arriveSpot, dist: 0.2, locOff: false, protoOpen: false }, () => this.arrivalBeat());
+              return;
+            }
+            if (b.d === 1.2) { this.setState({ base: 'hollis', dist: 1.2, locOff: false, protoOpen: false }); return; }
+            if (target <= 0.3 && st.heading && st.heading.spot === baseSid) { this.setState({ locOff: false }); this.arrive(true, target); return; }
             const wasNear = !st.locOff && st.dist <= 0.3;
             this.setState({ dist: target, locOff: false, protoOpen: false }, () => { if (target <= 0.3 && (!wasNear || b.d === 0.2)) this.arrivalBeat(); });
           }
@@ -2047,7 +2079,7 @@ class Component extends DCLogic {
       copyCode: () => { try { navigator.clipboard.writeText((it.code || '').replace(/ /g, '')).catch(() => {}); } catch (e) {} this.showToast('Locker code copied'); },
       toast: { show: !!st.toast, text: st.toast ? st.toast.text : '', variant: st.toast ? st.toast.variant : 'success', bottom: toastBottom,
         icon: st.toast && st.toast.act === 'near' ? ic.MarkerPin01 : undefined,
-        action: st.toast && st.toast.act === 'near' ? { label: 'Check in', onPress: () => { clearTimeout(this._toastT); this.setState({ toast: null }); openSpot('hollis')(); } } : undefined },
+        action: st.toast && st.toast.act === 'near' ? { label: 'Check in', onPress: () => { clearTimeout(this._toastT); this.setState({ toast: null }); openSpot(baseSid)(); } } : undefined },
       proto
     };
   }
