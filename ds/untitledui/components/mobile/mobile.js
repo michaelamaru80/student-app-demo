@@ -243,6 +243,22 @@
     );
   }
 
+  /* ItemTile — an item's tile (icon or photo) at the start of a list row. With selectable, an Untitled UI checkbox sits on the
+     tile's top-left corner and the tile itself is the toggle (role=checkbox); the rest of the row keeps its own action (open details).
+     Not the photo review grid: that is PhotoTile. */
+  function ItemTile(p) {
+    var U = window.UntitledUI || {};
+    var size = p.size || 48;
+    var sel = !!p.selected;
+    var check = U.CheckboxBase ? h(U.CheckboxBase, { size: 'md', isSelected: sel })
+      : h('span', { style: { width: 20, height: 20, boxSizing: 'border-box', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#ffffff', background: sel ? T.brand600 : T.bg, border: sel ? 0 : '1px solid ' + T.border1 } }, sel ? icon(icons().Check, 14) : null);
+    var tile = h('span', { style: { position: 'relative', flex: '0 0 auto', width: size, height: size, boxSizing: 'border-box', borderRadius: 12, background: T.bg2, boxShadow: 'inset 0 0 0 1px ' + T.border2, display: 'flex', alignItems: 'center', justifyContent: 'center', color: T.fg4 } },
+      p.image ? h('span', { style: { position: 'absolute', inset: 0, borderRadius: 12, overflow: 'hidden' } }, p.image) : icon(p.icon, 24),
+      p.selectable ? h('span', { style: { position: 'absolute', left: -8, top: -8, display: 'flex', borderRadius: 6, background: T.bg, boxShadow: '0 0 0 2px ' + T.bg } }, check) : null);
+    if (!p.selectable) return h('span', { 'aria-hidden': true, className: p.className, style: { display: 'flex', flex: '0 0 auto' } }, tile);
+    return h('button', { type: 'button', role: 'checkbox', 'aria-checked': sel, 'aria-label': p.label, onClick: p.onToggle, className: p.className, style: { flex: '0 0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: size + 8, minHeight: Math.max(44, size + 8), padding: 0, border: 0, background: 'none', cursor: 'pointer' } }, tile);
+  }
+
   /* ActionSheetRow — one 56px row in an action sheet. */
   function ActionSheetRow(p) {
     var color = p.destructive ? 'var(--color-text-error-primary, #d92d20)' : T.text;
@@ -261,6 +277,6 @@
   }
 
   window.UntitledMobile = { BottomSheet: BottomSheet, Toast: Toast, DarkToast: DarkToast, CameraControls: CameraControls, PhotoTile: PhotoTile, ActionSheetRow: ActionSheetRow,
-    GroupBand: GroupBand, StepHeader: StepHeader, PersonCard: PersonCard, OptionRow: OptionRow, ScanSheet: ScanSheet, CameraFallback: CameraFallback, PrintAction: PrintAction,
-    status: { BottomSheet: 'Draft', Toast: 'Draft', DarkToast: 'Draft', CameraControls: 'Draft', PhotoTile: 'Draft', ActionSheetRow: 'Draft', GroupBand: 'Draft', StepHeader: 'Draft', PersonCard: 'Draft', OptionRow: 'Draft', ScanSheet: 'Draft', CameraFallback: 'Draft', PrintAction: 'Draft' } };
+    GroupBand: GroupBand, StepHeader: StepHeader, PersonCard: PersonCard, OptionRow: OptionRow, ScanSheet: ScanSheet, CameraFallback: CameraFallback, PrintAction: PrintAction, ItemTile: ItemTile,
+    status: { ItemTile: 'Draft', BottomSheet: 'Draft', Toast: 'Draft', DarkToast: 'Draft', CameraControls: 'Draft', PhotoTile: 'Draft', ActionSheetRow: 'Draft', GroupBand: 'Draft', StepHeader: 'Draft', PersonCard: 'Draft', OptionRow: 'Draft', ScanSheet: 'Draft', CameraFallback: 'Draft', PrintAction: 'Draft' } };
 })();

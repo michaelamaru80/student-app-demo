@@ -428,6 +428,8 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         <span style="font-size: 14px; line-height: 20px; color: {{sp.waitSubFg}}">{{sp.waitSub}}</span>
       </div>
       </sc-if>
+      <!-- Directions: last line of the place header, under the wait row (not on item details). 44pt tap area; negative margins keep it tight to the line above. -->
+      <div style="display: flex; align-items: center; min-height: 44px; margin: -20px 0 -12px"><x-import component-from-global-scope="UntitledUI.Button" color="link-color" size="sm" icon-leading="{{ic.NavigationPointer01}}" on-press="{{sp.directions}}">Directions</x-import></div>
 
       <sc-if value="{{sp.booked}}" hint-placeholder-val="{{false}}">
         <section style="display: flex; align-items: flex-start; gap: 12px; padding: 16px; border-radius: 16px; background: var(--color-brand-50)">
@@ -480,13 +482,14 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
           <div style="margin: 8px -16px 0">
             <sc-for list="{{sp.ready}}" as="r" hint-placeholder-count="3">
               <div style="display: flex; align-items: stretch; min-height: 80px">
+                <!-- Design system: UntitledMobile.ItemTile. Selectable = checkbox on the tile's top-left corner; the tile toggles, the rest of the row opens details. -->
                 <sc-if value="{{sp.selectable}}" hint-placeholder-val="{{true}}">
-                  <button type="button" role="checkbox" aria-checked="{{r.on}}" aria-label="{{r.selLabel}}" class="row-btn" onClick="{{r.toggle}}" style="flex: 0 0 auto; width: 60px; display: flex; align-items: center; padding: 0 0 0 16px; border: 0; background: none; cursor: pointer">
-                    <x-import component-from-global-scope="UntitledUI.CheckboxBase" size="md" is-selected="{{r.on}}"></x-import>
-                  </button>
+                  <div style="flex: 0 0 auto; display: flex; align-items: center; padding-left: 20px">
+                    <x-import component-from-global-scope="UntitledMobile.ItemTile" class="row-btn" icon="{{r.icon}}" selectable="{{true}}" selected="{{r.on}}" label="{{r.selLabel}}" on-toggle="{{r.toggle}}"></x-import>
+                  </div>
                 </sc-if>
                 <button type="button" class="row-btn" onClick="{{r.open}}" style="flex: 1 1 auto; min-width: 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px 12px {{sp.rowPadL}}; border: 0; border-top: 1px solid {{r.rule}}; background: none; font: inherit; text-align: left; cursor: pointer">
-                  <span aria-hidden="true" style="flex: 0 0 auto; width: 48px; height: 48px; border-radius: 12px; background: var(--color-bg-secondary); box-shadow: inset 0 0 0 1px var(--color-border-secondary); display: flex; align-items: center; justify-content: center; color: var(--color-fg-quaternary)"><sc-if value="{{r.isEnv}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Mail01" class="size-6"></x-import></sc-if><sc-if value="{{r.isBox}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="UntitledUI.Icons.Package" class="size-6"></x-import></sc-if></span>
+                  <sc-if value="{{sp.notSelectable}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledMobile.ItemTile" icon="{{r.icon}}"></x-import></sc-if>
                   <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px">
                     <span style="display: flex; align-items: center; gap: 8px"><span style="font-size: 16px; line-height: 24px; font-weight: 600; color: {{r.fg}}">{{r.from}}</span><sc-if value="{{r.today}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Badge" type="pill-color" color="warning" size="sm">Pick up today</x-import></sc-if></span>
                     <span style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{r.sub}}</span>
@@ -600,7 +603,7 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
     <main class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 0 16px 34px">
       <div style="display: flex; flex-direction: column; gap: 4px; padding-top: 4px">
         <h2 style="margin: 0; font-size: 24px; line-height: 32px; font-weight: 600; letter-spacing: -0.02em; color: var(--color-text-primary)">{{lk.titleName}}</h2>
-        <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{lk.titleSub}}</div>
+        <div style="display: flex; flex-wrap: wrap; align-items: center; column-gap: 12px; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)"><span>{{lk.titleSub}}</span><span style="display: inline-flex; align-items: center; min-height: 44px; margin: -12px 0"><x-import component-from-global-scope="UntitledUI.Button" color="link-color" size="sm" icon-leading="{{ic.NavigationPointer01}}" on-press="{{lk.directions}}">Directions</x-import></span></div>
       </div>
       <sc-if value="{{lk.hasAlert}}" hint-placeholder-val="{{false}}">
         <div role="note" style="display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-yellow-700)">
@@ -634,13 +637,21 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
   <!-- ============ ITEM DETAIL ============ -->
   <sc-if value="{{f.item}}" hint-placeholder-val="{{false}}">
     <main class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 8px 16px 34px">
-      <div style="display: flex; flex-direction: column; gap: 6px; padding: 0 4px">
-        <div style="display: flex; align-items: center; gap: 8px">
-          <span style="flex: 1 1 auto; font-size: 24px; line-height: 32px; font-weight: 600; color: var(--color-text-primary)">{{it.from}}</span>
-          <x-import component-from-global-scope="UntitledUI.Badge" type="pill-color" color="{{it.badgeColor}}" size="md">{{it.badge}}</x-import>
-        </div>
-        <div style="display: flex; align-items: center; gap: 6px; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">
-          <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.MarkerPin01" class="size-5" aria-hidden="true"></x-import></span>{{it.spotName}}
+      <!-- Item details summary: status, what to know, latest activity, details. Full activity and notes open in sheets. -->
+      <!-- 24pt from the header to the cards (main gap 16 + 8). -->
+      <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 8px">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <span aria-hidden="true" style="flex: 0 0 48px; width: 48px; height: 48px; border-radius: 12px; background: var(--color-bg-secondary); box-shadow: inset 0 0 0 1px var(--color-border-secondary); display: flex; align-items: center; justify-content: center; color: var(--color-fg-quaternary)">
+            <sc-if value="{{it.isLocker}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.LayoutGrid02" class="size-6" aria-hidden="true"></x-import></sc-if>
+            <sc-if value="{{it.notLocker}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="UntitledUI.Icons.Package" class="size-6" aria-hidden="true"></x-import></sc-if>
+          </span>
+          <div style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
+            <!-- No status badge here: Activity (current step), the perishable banner and the locker code block carry status. My Items keeps badges. -->
+            <span style="min-width: 0; font-size: 24px; line-height: 32px; font-weight: 600; color: var(--color-text-primary)">{{it.from}}</span>
+            <button type="button" class="row-btn" onClick="{{it.openPlace}}" style="align-self: flex-start; display: flex; align-items: center; gap: 4px; min-height: 44px; margin: -12px 0 -12px -4px; padding: 0 4px; border: 0; background: none; font: inherit; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary); cursor: pointer">
+              <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.MarkerPin01" class="size-4" aria-hidden="true"></x-import></span>{{it.spotName}}<span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-4" aria-hidden="true"></x-import></span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -673,22 +684,23 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         </section>
       </sc-if>
 
-      <sc-if value="{{it.isProc}}" hint-placeholder-val="{{false}}">
-        <section style="display: flex; flex-direction: column; gap: 8px">
-          <div style="font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Status</div>
-          <div style="margin: 0 -16px">
-            <sc-for list="{{it.steps}}" as="s" hint-placeholder-count="3">
-              <div style="display: flex; gap: 12px; padding: 12px 16px; border-top: 1px solid {{s.rule}}">
-                <span aria-hidden="true" style="flex: 0 0 auto; width: 10px; height: 10px; margin-top: 6px; border-radius: 9999px; background: {{s.dot}}"></span>
-                <span>
-                  <span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: {{s.fg}}">{{s.title}}</span>
-                  <span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{s.sub}}</span>
-                </span>
-              </div>
-            </sc-for>
-          </div>
-        </section>
+      <!-- Tappable summary cards (white card + outline = tappable). Same anatomy: 32 pt icon circle, 16/24 title, 14/20 line, 14/20 meta, chevron. -->
+      <sc-if value="{{it.hasNotes}}" hint-placeholder-val="{{false}}">
+        <button type="button" class="row-btn" onClick="{{it.openNotes}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px; border: 0; border-radius: 16px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary), 0 1px 2px rgba(10, 13, 18, 0.05); font: inherit; text-align: left; cursor: pointer">
+          <span aria-hidden="true" style="align-self: flex-start; margin-top: 4px; flex: 0 0 32px; width: 32px; height: 32px; border-radius: 9999px; background: var(--color-bg-secondary); color: var(--color-fg-quaternary); display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.MessageChatSquare" class="size-4" aria-hidden="true"></x-import></span>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">Notes</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-secondary)">{{it.noteText}}</span><span style="display: block; margin-top: 4px; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{it.noteMeta}}</span></span>
+          <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span>
+        </button>
       </sc-if>
+
+      <!-- Activity card: same anatomy as the Notes card (title, current step, time + count). No section label. -->
+      <section style="display: flex; flex-direction: column">
+        <button type="button" class="row-btn" onClick="{{it.openActivity}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px; border: 0; border-radius: 16px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary), 0 1px 2px rgba(10, 13, 18, 0.05); font: inherit; text-align: left; cursor: pointer">
+          <span aria-hidden="true" style="align-self: flex-start; margin-top: 4px; flex: 0 0 32px; width: 32px; height: 32px; border-radius: 9999px; background: {{it.cur.bg}}; color: {{it.cur.fg}}; display: flex; align-items: center; justify-content: center"><sc-for list="{{it.curList}}" as="s" hint-placeholder-count="1"><sc-if value="{{s.iReady}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="UntitledUI.Icons.CheckCircle" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iBell}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Bell01" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iBox}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Package" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iTruck}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Truck01" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iNote}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.MessageChatSquare" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iLock}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.LayoutGrid02" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iClock}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Clock" class="size-4" aria-hidden="true"></x-import></sc-if></sc-for></span>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">Activity</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-secondary)">{{it.cur.line}}</span><span style="display: block; margin-top: 4px; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{it.cur.meta}}</span></span>
+          <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span>
+        </button>
+      </section>
 
       <sc-if value="{{it.isDone}}" hint-placeholder-val="{{false}}">
         <div style="display: flex; gap: 8px; padding: 12px; border-radius: 8px; background: var(--color-bg-success-primary); box-shadow: 0 0 0 1px var(--color-utility-green-200)">
@@ -697,39 +709,26 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         </div>
       </sc-if>
 
-      <section style="display: flex; flex-direction: column; gap: 8px">
-        <div style="font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Details</div>
-        <div style="margin: 0 -16px">
+      <!-- Details: no label (the rows label themselves); a hairline separates them from the cards. -->
+      <section style="display: flex; flex-direction: column; margin-top: 8px">
+        <div style="margin: 0 -16px; border-top: 1px solid var(--color-border-secondary)">
           <sc-for list="{{it.facts}}" as="d" hint-placeholder-count="5">
-            <div style="display: flex; align-items: baseline; gap: 12px; min-height: 48px; box-sizing: border-box; padding: 12px 16px; border-top: 1px solid {{d.rule}}">
+            <button type="button" class="row-btn" onClick="{{d.go}}" disabled="{{d.static}}" style="width: 100%; display: flex; align-items: baseline; gap: 12px; min-height: 48px; box-sizing: border-box; padding: 12px 16px; border: 0; border-top: 1px solid {{d.rule}}; background: none; font: inherit; text-align: left; opacity: 1; cursor: {{d.cursor}}">
               <span style="flex: 0 0 112px; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{d.k}}</span>
               <span style="flex: 1 1 auto; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">{{d.v}}</span>
-            </div>
+              <sc-if value="{{d.copy}}" hint-placeholder-val="{{false}}"><span style="align-self: center; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.Copy01" class="size-4" aria-hidden="true"></x-import></span></sc-if>
+            </button>
           </sc-for>
         </div>
       </section>
 
       <sc-if value="{{it.hasPhoto}}" hint-placeholder-val="{{true}}">
-        <figure style="margin: 0; display: flex; flex-direction: column; gap: 6px">
-          <div role="img" aria-label="Photo placeholder: package photo taken when the mailroom received it" style="height: 180px; border-radius: 12px; background: var(--color-bg-secondary); box-shadow: inset 0 0 0 1px var(--color-border-secondary); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--color-fg-quaternary)">
-            <x-import component-from-global-scope="UntitledUI.Icons.Image01" class="size-6" aria-hidden="true"></x-import>
-            <span style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Package photo</span>
-          </div>
-          <figcaption style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Taken when the mailroom received it</figcaption>
-        </figure>
+        <button type="button" class="row-btn" onClick="{{it.openPhoto}}" style="margin: -8px -16px 0; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left; cursor: pointer">
+          <span role="img" aria-label="Package photo" style="position: relative; flex: 0 0 64px; width: 64px; height: 64px; border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--color-border-secondary)"><svg viewBox="0 0 120 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block"><rect width="120" height="120" fill="#E3E2DE"></rect><rect y="78" width="120" height="42" fill="#D3D3CF"></rect><path d="M22 52 L62 40 L100 52 L60 64 Z" fill="#D2B48A"></path><path d="M22 52 L60 64 L60 96 L22 84 Z" fill="#BE9A6A"></path><path d="M60 64 L100 52 L100 84 L60 96 Z" fill="#AD8A5C"></path><path d="M41 46 L80 58" stroke="#E6CFA6" stroke-width="3"></path><path d="M70 66 L92 60 L92 74 L70 80 Z" fill="#FAFAF7"></path></svg><span style="position: absolute; right: 4px; top: 4px; width: 20px; height: 20px; border-radius: 9999px; background: rgba(255,255,255,0.9); color: var(--color-fg-secondary); display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.Maximize02" class="size-3" aria-hidden="true"></x-import></span></span>
+          <span style="flex: 1 1 auto"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Package photo</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{it.photoSub}}</span></span>
+        </button>
       </sc-if>
 
-      <sc-if value="{{it.hasNotes}}" hint-placeholder-val="{{false}}">
-        <section style="display: flex; flex-direction: column; gap: 8px">
-          <div style="font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">From the mailroom</div>
-          <sc-for list="{{it.notes}}" as="n" hint-placeholder-count="1">
-            <div style="padding: 12px 16px; border-radius: 12px; background: var(--color-bg-secondary)">
-              <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{n.t}}</div>
-              <div style="font-size: 14px; line-height: 20px; color: var(--color-text-primary)">{{n.m}}</div>
-            </div>
-          </sc-for>
-        </section>
-      </sc-if>
     </main>
   </sc-if>
 
@@ -988,10 +987,12 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
     </x-import>
   </sc-if>
 
-  <!-- On your way: opened from the active card while headed there. Calm (no school-color panel); check-in switches to the ticket sheet. -->
+  <!-- On your way: opened from the active card while headed there. Calm (no school-color panel); check-in switches to the ticket sheet.
+       Full sheet: Directions and I’m not going now sit in a fixed footer outside the scroll area; status and items scroll above it. -->
   <sc-if value="{{sh.onway}}" hint-placeholder-val="{{false}}">
-    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="On your way" full="{{true}}" top="{{96}}" z-index="{{60}}" on-close="{{closeSheet}}">
-      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding-bottom: 34px; font-family: Inter, sans-serif">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="On your way" full="{{true}}" top="{{96}}" padding="{{0}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="height: 100%; display: flex; flex-direction: column; font-family: Inter, sans-serif">
+      <div class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px 20px 20px">
         <div style="display: flex; flex-direction: column; gap: 8px">
           <div style="display: flex; align-items: center; gap: 8px">
             <span class="live-dot" aria-hidden="true" style="flex: 0 0 auto; width: 10px; height: 10px; border-radius: 9999px; background: var(--color-fg-success-secondary)"></span>
@@ -1020,7 +1021,11 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
           </div>
         </div>
         <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">If you don’t arrive by {{hd.closes}}, we’ll cancel this and let you know.</div>
-        <div style="display: flex; justify-content: center; margin-top: auto"><x-import component-from-global-scope="UntitledUI.Button" color="tertiary-destructive" size="lg" on-press="{{cancelHeading}}">I’m not going now</x-import></div>
+      </div>
+        <div style="flex: 0 0 auto; padding: 16px 20px 22px; display: flex; flex-direction: column; gap: 12px; background: var(--color-bg-primary); border-top: 1px solid var(--color-border-secondary)">
+          <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" icon-leading="{{ic.NavigationPointer01}}" on-press="{{hd.directions}}">Directions</x-import></div>
+          <div style="display: flex; justify-content: center"><x-import component-from-global-scope="UntitledUI.Button" color="tertiary-destructive" size="lg" on-press="{{cancelHeading}}">I’m not going now</x-import></div>
+        </div>
       </div>
     </x-import>
   </sc-if>
@@ -1032,7 +1037,7 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         <!-- Same moment as the kiosk's check-in screen: white ticket on the school color, wait and people-ahead chips. Seen once; Home and Your pickup stay calm. -->
         <section aria-label="Your ticket" style="display: flex; flex-direction: column; gap: 4px; padding: 20px; border-radius: 12px; background: var(--school-brand); color: #FFFFFF">
           <div style="display: flex; align-items: center; gap: 8px">
-            <span aria-hidden="true" style="flex: 0 0 auto; width: 24px; height: 24px; border-radius: 9999px; background: #FFFFFF; color: var(--school-brand); display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.Check" class="size-4" aria-hidden="true"></x-import></span>
+            <span aria-hidden="true" style="flex: 0 0 auto; width: 24px; height: 24px; border-radius: 9999px; background: var(--color-bg-success-solid); box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.2); color: #FFFFFF; display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.Check" class="size-4" aria-hidden="true"></x-import></span>
             <span style="font-size: 16px; line-height: 24px; font-weight: 600; color: #FFFFFF">{{pk.spotName}}</span>
           </div>
           <div style="font-size: 48px; line-height: 60px; font-weight: 600; letter-spacing: -0.02em; color: #FFFFFF">{{pk.ticket}}</div>
@@ -1092,6 +1097,54 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         </div>
       </div>
     </x-import>
+  </sc-if>
+
+  <!-- Item › All activity: full sheet. Map (where it is now), then every step newest first; notes in the timeline at their time. -->
+  <sc-if value="{{sh.activity}}" hint-placeholder-val="{{false}}">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Activity" full="{{true}}" top="{{96}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding-bottom: 34px; font-family: Inter, sans-serif">
+        <sc-if value="{{it.hasMap}}" hint-placeholder-val="{{true}}"><div role="img" aria-label="{{it.mapLabel}}" style="position: relative; height: 150px; flex: 0 0 auto; border-radius: 12px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--color-border-secondary)"><svg viewBox="0 0 350 150" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block"><rect width="350" height="150" fill="#EFEDE6"></rect><path d="M0 0 H70 C60 25 72 40 50 55 C30 68 18 60 0 72 Z" fill="#B5D69C"></path><path d="M232 96 C250 88 275 92 290 104 L300 150 H222 C226 128 220 108 232 96 Z" fill="#B5D69C"></path><path d="M300 0 H350 V40 C335 46 320 38 310 26 C304 18 302 8 300 0 Z" fill="#B5D69C"></path><path d="M150 0 C156 18 140 30 146 46 C152 62 132 74 118 96 C108 112 120 124 112 150" fill="none" stroke="#86C2CE" stroke-width="5" stroke-linecap="round"></path><path d="M96 104 C104 92 126 94 130 108 C134 122 118 134 104 128 C92 123 90 112 96 104 Z" fill="#86C2CE"></path><path d="M0 96 L118 70" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M0 96 L118 70" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M20 150 L60 82" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M20 150 L60 82" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M170 0 L198 150" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M170 0 L198 150" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M200 40 L350 70" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M200 40 L350 70" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M240 0 L262 150" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M240 0 L262 150" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M300 70 L330 150" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M300 70 L330 150" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M0 30 L90 20" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M0 30 L90 20" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M80 150 L104 132" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M80 150 L104 132" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><path d="M180 110 L350 128" fill="none" stroke="#C9C6BC" stroke-width="6" stroke-linecap="round"></path><path d="M180 110 L350 128" fill="none" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"></path><rect x="18" y="104" width="16" height="10" rx="1.5" fill="#D9D6CD"></rect><rect x="40" y="112" width="12" height="14" rx="1.5" fill="#D9D6CD"></rect><rect x="186" y="52" width="18" height="10" rx="1.5" fill="#D9D6CD"></rect><rect x="212" y="56" width="12" height="16" rx="1.5" fill="#D9D6CD"></rect><rect x="272" y="78" width="20" height="12" rx="1.5" fill="#D9D6CD"></rect><rect x="300" y="88" width="14" height="10" rx="1.5" fill="#D9D6CD"></rect><rect x="206" y="120" width="16" height="12" rx="1.5" fill="#D9D6CD"></rect><rect x="250" y="40" width="14" height="12" rx="1.5" fill="#D9D6CD"></rect><rect x="96" y="30" width="18" height="10" rx="1.5" fill="#D9D6CD"></rect><rect x="20" y="40" width="10" height="8" rx="1.5" fill="#D9D6CD"></rect><rect x="318" y="108" width="18" height="10" rx="1.5" fill="#D9D6CD"></rect><rect x="188" y="18" width="14" height="10" rx="1.5" fill="#D9D6CD"></rect><rect x="270" y="14" width="18" height="10" rx="1.5" fill="#D9D6CD"></rect><path d="M0 60 L350 24" fill="none" stroke="#E79E2E" stroke-width="10" stroke-linecap="round"></path><path d="M0 60 L350 24" fill="none" stroke="#F8B84E" stroke-width="7.5" stroke-linecap="round"></path><path d="M120 0 L176 150" fill="none" stroke="#E79E2E" stroke-width="10" stroke-linecap="round"></path><path d="M120 0 L176 150" fill="none" stroke="#F8B84E" stroke-width="7.5" stroke-linecap="round"></path><path d="M218 0 L188 150" fill="none" stroke="#E79E2E" stroke-width="10" stroke-linecap="round"></path><path d="M218 0 L188 150" fill="none" stroke="#F8B84E" stroke-width="7.5" stroke-linecap="round"></path><rect x="190" y="92" width="34" height="22" rx="3" style="fill: var(--color-brand-200)"></rect><g transform="translate(207 100)"><circle r="16" style="fill: var(--color-brand-600)" opacity="0.18"></circle><path d="M0 6 C -9 -4 -10 -8 -10 -12 A 10 10 0 1 1 10 -12 C 10 -8 9 -4 0 6 Z" style="fill: var(--color-brand-600)" stroke="#FFFFFF" stroke-width="1.5"></path><circle cx="0" cy="-12" r="4" fill="#FFFFFF"></circle></g></svg><span style="position: absolute; left: 72px; top: 116px; white-space: nowrap; padding: 2px 8px; border-radius: 6px; background: var(--color-bg-primary); box-shadow: 0 1px 2px rgba(10,13,18,0.1); font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-primary)">{{it.mapPin}}</span></div></sc-if>
+        <div>
+          <sc-for list="{{it.acts}}" as="s" hint-placeholder-count="5">
+            <div style="display: flex; gap: 12px">
+              <span aria-hidden="true" style="flex: 0 0 32px; display: flex; flex-direction: column; align-items: center">
+                <span style="width: 32px; height: 32px; border-radius: 9999px; background: {{s.bg}}; color: {{s.fg}}; display: flex; align-items: center; justify-content: center"><sc-if value="{{s.iReady}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="UntitledUI.Icons.CheckCircle" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iBell}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Bell01" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iBox}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Package" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iTruck}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Truck01" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iNote}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.MessageChatSquare" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iLock}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.LayoutGrid02" class="size-4" aria-hidden="true"></x-import></sc-if><sc-if value="{{s.iClock}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Icons.Clock" class="size-4" aria-hidden="true"></x-import></sc-if></span>
+                <span style="flex: 1 1 auto; width: 2px; min-height: 8px; margin: 4px 0; border-radius: 2px; background: {{s.line}}"></span>
+              </span>
+              <span style="flex: 1 1 auto; min-width: 0; padding: 4px 0 16px">
+                <span style="display: block; font-size: 16px; line-height: 24px; font-weight: {{s.weight}}; color: {{s.tfg}}">{{s.title}}</span>
+                <span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{s.sub}}</span>
+                <sc-if value="{{s.isNote}}" hint-placeholder-val="{{false}}"><span style="display: block; margin-top: 8px; padding: 10px 12px; border-radius: 8px; background: var(--color-bg-secondary); font-size: 14px; line-height: 20px; color: var(--color-text-secondary)">{{s.text}}<sc-if value="{{s.photo}}" hint-placeholder-val="{{false}}"><button type="button" class="row-btn" onClick="{{it.openPhoto}}" aria-label="Open note photo" style="position: relative; display: block; margin-top: 8px; width: 72px; height: 72px; padding: 0; border: 0; border-radius: 8px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--color-border-secondary); cursor: pointer"><svg viewBox="0 0 120 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block"><rect width="120" height="120" fill="#E3E2DE"></rect><rect y="78" width="120" height="42" fill="#D3D3CF"></rect><path d="M22 52 L62 40 L100 52 L60 64 Z" fill="#D2B48A"></path><path d="M22 52 L60 64 L60 96 L22 84 Z" fill="#BE9A6A"></path><path d="M60 64 L100 52 L100 84 L60 96 Z" fill="#AD8A5C"></path><path d="M41 46 L80 58" stroke="#E6CFA6" stroke-width="3"></path><path d="M70 66 L92 60 L92 74 L70 80 Z" fill="#FAFAF7"></path></svg><span style="position: absolute; right: 4px; top: 4px; width: 20px; height: 20px; border-radius: 9999px; background: rgba(255,255,255,0.9); color: var(--color-fg-secondary); display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.Maximize02" class="size-3" aria-hidden="true"></x-import></span></button></sc-if></span></sc-if>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </x-import>
+  </sc-if>
+
+  <!-- Item › Notes: full sheet, chat-style (oldest to newest) so it can grow into two-way messaging. -->
+  <sc-if value="{{sh.notes}}" hint-placeholder-val="{{false}}">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Notes" full="{{true}}" top="{{96}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: flex-end; gap: 20px; padding-bottom: 34px; font-family: Inter, sans-serif">
+        <sc-for list="{{it.chat}}" as="s" hint-placeholder-count="2">
+          <sc-if value="{{s.day}}" hint-placeholder-val="{{false}}"><div style="align-self: center; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{s.dayText}}</div></sc-if>
+          <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; max-width: 85%">
+            <span style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)"><span style="font-weight: 600; color: var(--color-text-secondary)">Mailroom</span> · {{s.time}}</span>
+            <span style="display: block; padding: 10px 14px; border-radius: 4px 16px 16px 16px; background: var(--color-bg-secondary); font-size: 16px; line-height: 24px; color: var(--color-text-primary)">{{s.text}}<sc-if value="{{s.photo}}" hint-placeholder-val="{{false}}"><button type="button" class="row-btn" onClick="{{it.openPhoto}}" aria-label="Open note photo" style="position: relative; display: block; margin-top: 8px; width: 160px; height: 120px; padding: 0; border: 0; border-radius: 10px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--color-border-secondary); cursor: pointer"><svg viewBox="0 0 120 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block"><rect width="120" height="120" fill="#E3E2DE"></rect><rect y="78" width="120" height="42" fill="#D3D3CF"></rect><path d="M22 52 L62 40 L100 52 L60 64 Z" fill="#D2B48A"></path><path d="M22 52 L60 64 L60 96 L22 84 Z" fill="#BE9A6A"></path><path d="M60 64 L100 52 L100 84 L60 96 Z" fill="#AD8A5C"></path><path d="M41 46 L80 58" stroke="#E6CFA6" stroke-width="3"></path><path d="M70 66 L92 60 L92 74 L70 80 Z" fill="#FAFAF7"></path></svg><span style="position: absolute; right: 4px; top: 4px; width: 20px; height: 20px; border-radius: 9999px; background: rgba(255,255,255,0.9); color: var(--color-fg-secondary); display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.Maximize02" class="size-3" aria-hidden="true"></x-import></span></button></sc-if></span>
+          </div>
+        </sc-for>
+      </div>
+    </x-import>
+  </sc-if>
+
+  <!-- Photo viewer: full screen, dark, close button. -->
+  <sc-if value="{{it.photoOpen}}" hint-placeholder-val="{{false}}">
+    <div role="dialog" aria-label="Photo" style="position: absolute; inset: 0; z-index: 90; background: #0C111D; display: flex; flex-direction: column">
+      <div style="display: flex; justify-content: flex-end; padding: 52px 8px 0"><button type="button" class="nav-btn" aria-label="Close photo" onClick="{{it.closePhoto}}" style="width: 44px; height: 44px; border: 0; background: none; color: #FFFFFF; display: flex; align-items: center; justify-content: center; cursor: pointer"><x-import component-from-global-scope="UntitledUI.Icons.XClose" class="size-6" aria-hidden="true"></x-import></button></div>
+      <div style="flex: 1 1 auto; display: flex; align-items: center; padding: 0 16px"><div style="width: 100%; aspect-ratio: 1 / 1; border-radius: 12px; overflow: hidden"><svg viewBox="0 0 120 120" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="display: block"><rect width="120" height="120" fill="#E3E2DE"></rect><rect y="78" width="120" height="42" fill="#D3D3CF"></rect><path d="M22 52 L62 40 L100 52 L60 64 Z" fill="#D2B48A"></path><path d="M22 52 L60 64 L60 96 L22 84 Z" fill="#BE9A6A"></path><path d="M60 64 L100 52 L100 84 L60 96 Z" fill="#AD8A5C"></path><path d="M41 46 L80 58" stroke="#E6CFA6" stroke-width="3"></path><path d="M70 66 L92 60 L92 74 L70 80 Z" fill="#FAFAF7"></path></svg></div></div>
+      <div style="padding: 16px 16px 48px; font-size: 14px; line-height: 20px; color: #D0D5DD">{{it.photoCaption}}</div>
+    </div>
   </sc-if>
 
   <sc-if value="{{sh.leave}}" hint-placeholder-val="{{false}}">
@@ -1264,7 +1317,7 @@ class Component extends DCLogic {
   // ---------- sample data ----------
   seedItems(mode, combined) {
     const all = [
-      { id: 'a1', at: '10180942', from: 'Amazon', carrier: 'UPS', trk: '1Z84A3F00311772049', size: 'Large box', spot: 'hollis', status: 'ready', arrived: 'Sun, Oct 18 · 9:42 AM', notes: [{ t: 'Oct 18, 9:50 AM', m: 'Oversize item. Ask for it at Window 3.' }] },
+      { id: 'a1', at: '10180942', from: 'Amazon', carrier: 'UPS', trk: '1Z84A3F00311772049', size: 'Large box', spot: 'hollis', status: 'ready', arrived: 'Sun, Oct 18 · 9:42 AM', notes: [{ t: 'Oct 18, 9:50 AM', m: 'Oversize item. Ask for it at Window 3.' }, { t: 'Oct 18, 9:41 AM', m: 'Box arrived with a torn corner. Contents look fine.', photo: true, stage: 'received' }] },
       { id: 'a2', at: '10201014', from: 'Home Chef', carrier: 'FedEx', trk: '778122049930', size: 'Medium box', spot: 'hollis', status: 'ready', perishable: true, arrived: 'Today · 10:14 AM', notes: [{ t: 'Today, 10:20 AM', m: 'Kept in the cold room. Please pick up today.' }] },
       { id: 'a3', at: '10201130', from: "Registrar's Office", carrier: 'USPS', trk: '9405511206234471008122', size: 'Envelope', spot: 'hollis', status: 'ready', arrived: 'Today · 11:30 AM', notes: [] },
       { id: 'p1', from: 'Best Buy', carrier: 'UPS', trk: '1Z84A3F00412870056', size: 'Medium box', spot: 'hollis', status: 'processing', stage: 'Sorting', received: '11:52 AM', notes: [] },
@@ -1609,6 +1662,7 @@ class Component extends DCLogic {
       pct: Math.max(4, Math.min(100, Math.round(((hdg.startDist - distOf(hdg.spot)) / Math.max(0.1, hdg.startDist - 0.3)) * 100))),
       startText: hdg.startDist.toFixed(1) + ' mi away', updated: st.locOff ? "We can't see your location" : 'Location updated just now',
       usingOnly: st.perm === 'using',
+      directions: () => this.showToast('Opens Apple Maps to ' + SPOTS[hdg.spot].name, 'neutral'),
       items: hdItems.map((i, ix) => ({ from: i.from, sub: i.size + ' · ' + this.short(i.trk), rule: rule(ix) }))
     } : { items: [], sub: '' };
 
@@ -1703,6 +1757,7 @@ class Component extends DCLogic {
         waitLine: 'Now · ' + s.wait + ' min wait', waitFg: waitFg(s.wait), level: s.level,
         waitBig: 'About ' + s.wait + ' min', waitShort: s.wait + ' min wait', waitSub: s.level || '', waitSubFg: levelFg(s.wait || 0), titleName: s.name,
         titleSub: [s.mailroom && s.lockers ? 'Mailroom and lockers' : s.mailroom ? 'Mailroom' : 'Lockers', s.hours || '', distTxt(sid)].filter(Boolean).join(' · '),
+        directions: () => this.showToast('Opens Apple Maps to ' + s.name, 'neutral'),
         isMail: !!s.mailroom, hasFooter: !!s.mailroom,
         hasLock: at(sid, 'locker').length > 0, lockLabel: 'Lockers · ' + plural(at(sid, 'locker').length, 'item'),
         locks: at(sid, 'locker').map((i, ix) => ({ from: i.from, sub: i.size + ' · until ' + i.until, locker: 'Locker ' + i.locker, code: i.code, rule: rule(ix), open: openItem(i.id) })),
@@ -1714,7 +1769,7 @@ class Component extends DCLogic {
         ready: shown.map((i, ix) => {
           const on = !st.skip[i.id];
           return {
-            from: i.from, sub: i.size + ' · ' + this.short(i.trk), today: !!i.perishable, rule: rule(ix), open: openItem(i.id),
+            from: i.from, sub: i.size + ' · ' + this.short(i.trk), today: !!i.perishable, rule: rule(ix), open: openItem(i.id), icon: i.size === 'Envelope' ? ic.Mail01 : ic.Package,
             isEnv: i.size === 'Envelope', isBox: i.size !== 'Envelope', on, fg: selectable && !on ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)',
             selLabel: (on ? 'Picking up ' : 'Leaving for later: ') + i.from,
             toggle: () => {
@@ -1724,7 +1779,7 @@ class Component extends DCLogic {
             }
           };
         }),
-        selectable, rowPadL: selectable ? '0' : '16px',
+        selectable, notSelectable: !selectable, rowPadL: selectable ? '12px' : '16px',
         canEdit: locked && !q && !hdg, startEdit: () => this.setState({ editBk: true, skip: bkSkip, selWarn: false }),
         editing, saveLabel: 'Save · ' + plural(selN, 'item'),
         saveEdit: () => { this.setState({ booking: Object.assign({}, bkg, { ids: selIds }), editBk: false, selWarn: false }); this.showToast('Booking updated · ' + plural(selN, 'item')); },
@@ -1748,7 +1803,7 @@ class Component extends DCLogic {
     let lk = { label: '', rows: [], hasAlert: false, alertText: '', titleName: '', titleSub: '' };
     if (s && s.type === 'locker') {
       const lock = at(sid, 'locker');
-      lk = { titleName: s.name, titleSub: distTxt(sid), hasAlert: urgentOf(sid).length > 0, alertText: bannerOf(urgentOf(sid)), label: 'In a locker · ' + plural(lock.length, 'item'), rows: lock.map((i, ix) => ({ from: i.from, locker: i.locker, until: i.until, code: i.code, rule: rule(ix), open: openItem(i.id) })) };
+      lk = { titleName: s.name, titleSub: distTxt(sid), directions: () => this.showToast('Opens Apple Maps to ' + s.name, 'neutral'), hasAlert: urgentOf(sid).length > 0, alertText: bannerOf(urgentOf(sid)), label: 'In a locker · ' + plural(lock.length, 'item'), rows: lock.map((i, ix) => ({ from: i.from, locker: i.locker, until: i.until, code: i.code, rule: rule(ix), open: openItem(i.id) })) };
     }
 
     // ----- item screen -----
@@ -1779,9 +1834,67 @@ class Component extends DCLogic {
             { title: 'Ready for pickup', sub: "It moves to Ready here as soon as it's shelved", on: false }
           ].map((x, ix) => ({ title: x.title, sub: x.sub, rule: rule(ix), dot: x.on ? 'var(--color-fg-brand-primary)' : 'var(--color-border-primary)', fg: x.on ? 'var(--color-text-primary)' : 'var(--color-text-tertiary)' })) : [],
           isDone: i.status === 'done', doneText: i.status === 'done' ? 'Picked up ' + i.when + ' at ' + i.place + '. ' + i.proof + '.' : '',
-          facts: facts.map((f, ix) => ({ k: f[0], v: f[1], rule: rule(ix) })),
+          facts: facts.map((f, ix) => {
+            const copy = f[0] === 'Tracking';
+            return { k: f[0], v: f[1], rule: rule(ix), copy, static: !copy, cursor: copy ? 'pointer' : 'default',
+              go: copy ? () => { try { navigator.clipboard.writeText(i.trk).catch(() => {}); } catch (e) {} this.showToast('Tracking number copied'); } : () => {} };
+          }),
           hasPhoto: i.status !== 'processing',
-          hasNotes: (i.notes || []).length > 0, notes: i.notes || []
+          hasNotes: (i.notes || []).length > 0, notes: i.notes || [],
+          notLocker: i.status !== 'locker',
+          // Notes are stored newest first. The card shows the newest; Notes sheet reads oldest to newest (chat).
+          noteText: (i.notes || [])[0] ? i.notes[0].m : '',
+          noteMeta: (i.notes || [])[0] ? i.notes[0].t + ((i.notes || []).length > 1 ? ' · ' + i.notes.length + ' notes' : '') : '',
+          chat: (i.notes || []).slice().reverse().map((n, ix, arr) => {
+            const d = n.t.split(',')[0], prev = ix ? arr[ix - 1].t.split(',')[0] : null;
+            return { text: n.m, photo: !!n.photo, time: (n.t.split(', ')[1] || n.t), day: d !== prev, dayText: d };
+          }),
+          openNotes: () => this.setState({ sheet: 'notes' }),
+          openActivity: () => this.setState({ sheet: 'activity' }),
+          openPlace: () => this.navLater(() => this.setState({ stack: st.stack.concat([{ v: 'spot', id: i.spot }]), skip: {}, selWarn: false, sheet: null })),
+          hasMap: i.status !== 'done', mapLabel: 'Map: ' + SPOTS[i.spot].name, mapPin: SPOTS[i.spot].name + (SPOTS[i.spot].mailroom ? ' Mailroom' : ''),
+          directions: () => this.showToast('Opens Apple Maps to ' + SPOTS[i.spot].name, 'neutral'),
+          photoSub: 'Taken when received' + (i.arrived ? ' · ' + i.arrived.split(' · ')[1] : ''),
+          photoOpen: !!st.photoOpen, openPhoto: () => this.setState({ photoOpen: true }), closePhoto: () => this.setState({ photoOpen: false }),
+          photoCaption: i.from + ' · ' + SPOTS[i.spot].name,
+          // Activity, newest first. Notes sit at their own time (a note with stage 'received' falls between Received and Ready).
+          ...(() => {
+            const place = SPOTS[i.spot].name, day = (i.arrived || i.received || '').split(' · ')[0] || 'Today';
+            const notes = i.notes || [], noteAt = (stage) => notes.filter((n) => (n.stage || 'top') === stage).map((n) => ({ k: 'iNote', title: 'Note from the mailroom', sub: n.t, isNote: true, text: n.m, photo: !!n.photo }));
+            const L = [];
+            if (i.status === 'done') L.push({ k: 'iReady', title: 'Picked up', sub: i.when + ' · ' + i.place + ' · ' + i.proof });
+            L.push(...noteAt('top'));
+            if (i.status === 'processing') {
+              L.push({ k: 'iClock', title: 'Ready for pickup', sub: "Next: as soon as it's shelved", next: true });
+              if (i.stage === 'Sorting') L.push({ k: 'iBox', title: 'Sorting', sub: 'Being labeled and shelved' });
+              L.push(...noteAt('received'));
+              L.push({ k: 'iBox', title: 'Received', sub: 'Today · ' + i.received + ' · ' + place });
+            } else if (i.status === 'locker') {
+              L.push({ k: 'iBell', title: 'Code sent', sub: 'Push, Email' });
+              L.push({ k: 'iLock', title: 'Placed in locker ' + i.locker, sub: i.arrived + ' · until ' + i.until });
+              L.push(...noteAt('received'));
+              L.push({ k: 'iBox', title: 'Received', sub: i.arrived + ' · ' + place });
+            } else {
+              if (i.status !== 'done') L.push({ k: 'iBell', title: 'Notified', sub: (i.arrived || '') + ' · Push, Text' });
+              if (i.status !== 'done') L.push({ k: 'iReady', title: 'Ready for pickup', sub: (i.arrived || '') + ' · ' + place });
+              L.push(...noteAt('received'));
+              L.push({ k: 'iBox', title: 'Received', sub: (i.arrived || i.when || '') + ' · ' + place });
+            }
+            L.push({ k: 'iTruck', title: 'Delivered by ' + i.carrier, sub: day + ' · ' + place + ' loading dock' });
+            const curIx = Math.max(0, L.findIndex((x) => !x.next && x.k !== 'iNote' && x.k !== 'iBell'));
+            const acts = L.map((x, ix) => {
+              const on = ix === curIx;
+              return { title: x.title, sub: x.sub, isNote: !!x.isNote, text: x.text || '', photo: !!x.photo,
+                iReady: x.k === 'iReady', iBell: x.k === 'iBell', iBox: x.k === 'iBox', iTruck: x.k === 'iTruck', iNote: x.k === 'iNote', iLock: x.k === 'iLock', iClock: x.k === 'iClock',
+                bg: on ? 'var(--color-bg-success-primary)' : 'var(--color-bg-secondary)', fg: on ? 'var(--color-fg-success-primary)' : 'var(--color-fg-quaternary)',
+                weight: on ? 600 : 500, tfg: x.next ? 'var(--color-text-tertiary)' : 'var(--color-text-primary)', line: ix === L.length - 1 ? 'transparent' : 'var(--color-border-secondary)' };
+            });
+            // Card lines: 'Ready for pickup · Hollis Hall' / 'Sun, Oct 18 · 9:42 AM · 6 updates' (place moves up to the step line).
+            const cur = acts[curIx], parts = (cur.sub || '').split(' · '), hasPlace = parts[parts.length - 1] === place;
+            const line = cur.title + (hasPlace ? ' · ' + place : '');
+            const meta = (hasPlace ? parts.slice(0, -1) : parts).filter(Boolean).concat([plural(acts.length, 'update')]).join(' · ');
+            return { acts, cur: Object.assign({}, cur, { line, meta }), curList: [acts[curIx]], actCount: acts.length };
+          })()
         };
       }
     }
@@ -2063,7 +2176,7 @@ class Component extends DCLogic {
       dead: () => this.showToast('Not part of this prototype', 'neutral'),
       qb, urgent, cards, cardsFirst: cards.slice(0, 1), cardsRest: cards.slice(1), hasSpots: cards.length > 0, noSpots: cards.length === 0,
       filters, list, pk, bk, bar, sp, lk, it, bz, ci, lv, nt,
-      sh: { pickup: !!ciSpot, checkedin: st.sheet === 'checkedin' && !!q, onway: st.sheet === 'onway' && !!hdg && !q, called: st.sheet === 'called' && !!q && q.state === 'called', done: st.sheet === 'done' && !q && !!st.done, leave: st.sheet === 'leave' && !!q },
+      sh: { pickup: !!ciSpot, checkedin: st.sheet === 'checkedin' && !!q, onway: st.sheet === 'onway' && !!hdg && !q, called: st.sheet === 'called' && !!q && q.state === 'called', activity: st.sheet === 'activity' && view === 'item', notes: st.sheet === 'notes' && view === 'item', done: st.sheet === 'done' && !q && !!st.done, leave: st.sheet === 'leave' && !!q },
       ps, hd,
       openPickup: () => this.setState({ sheet: 'pickup', pstep: 'choose', pspot: sid, pmode: 'pickup', skip: {}, selWarn: false }),
       headedFromBooking: () => { if (bkg) this.setState({ stack: [{ v: 'spot', id: bkg.spot }], sheet: 'pickup', pstep: 'items', pspot: bkg.spot, pmode: 'pickup', skip: {}, selWarn: false }); },
