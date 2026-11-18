@@ -51,6 +51,34 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
 .proto-trigger{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace !important;font-size:11px !important;letter-spacing:0 !important}
 .hdr-fade{transition:opacity 200ms ease,box-shadow 200ms ease}
 @media (prefers-reduced-motion: reduce){.hdr-fade{transition:none}}
+.kk{transition:background-color 60ms linear}
+.kk:active{background:#B9BDC6 !important}
+@keyframes kb-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.kb-anim{animation:kb-up 220ms cubic-bezier(.2,.8,.2,1)}
+@media (prefers-reduced-motion: reduce){.kb-anim{animation:none}}
+/* Leaving card or row: fade, then close the gap so the content below slides up (no jump). */
+@keyframes pp-out{0%{opacity:1;max-height:120px}60%{opacity:0;max-height:120px;padding-top:16px;padding-bottom:16px;margin-bottom:0}100%{opacity:0;max-height:0;padding-top:0;padding-bottom:0;margin-bottom:-16px}}
+@keyframes pp-out-row{0%{opacity:1;max-height:96px}60%{opacity:0;max-height:96px;padding-top:10px;padding-bottom:10px}100%{opacity:0;max-height:0;min-height:0;padding-top:0;padding-bottom:0}}
+.pp-swipe-card{position:relative;z-index:1;touch-action:pan-y}.pp-swipe-act{z-index:0}
+.pp-leave{animation:pp-out 300ms ease forwards;overflow:hidden;pointer-events:none}
+.pp-leave-row{animation:pp-out-row 300ms ease forwards;overflow:hidden;pointer-events:none}
+@media (prefers-reduced-motion: reduce){.pp-leave,.pp-leave-row{animation:none}}
+/* Pickup dates: the range field reads like a field (left-aligned); the calendar's typed start/end inputs are hidden because the range is set from presets and taps. */
+.pp-range-btn button{justify-content:flex-start}
+.pp-cal .md\:hidden{display:none !important}
+/* Phone sizing for the Untitled RangeCalendar: full width, ~48pt days with 44pt circles, 44pt month arrows, 44pt preset chips. */
+.pp-cal [role=application]{width:100%}
+.pp-cal [role=application]>.flex-col{width:100%;padding:0 16px !important;gap:8px !important}
+.pp-cal table{width:100% !important}
+.pp-cal th>div{width:100% !important;font-size:14px}
+.pp-cal td [role=button]{width:100% !important;height:48px !important;cursor:pointer}
+.pp-cal td [role=button]>div{width:44px !important;height:44px !important;margin:2px auto;font-size:16px !important}
+.pp-cal [slot=previous],.pp-cal [slot=next]{width:44px !important;height:44px !important}
+.pp-cal header h2{font-size:16px !important;line-height:24px}
+.pp-chip button{width:100%;min-height:44px;padding-left:8px !important;padding-right:8px !important}
+/* The calendar marks the device's real date as "today"; the prototype's today is Oct 20 (shown as the selected Start), so the real-today dot and tint are hidden. */
+.pp-cal [data-today]>div>div{display:none !important}
+.pp-cal [data-today]:not([data-selected])>div{background:transparent !important;font-weight:400 !important}
 .hscroll::-webkit-scrollbar{display:none}
 </style>
 </helmet>
@@ -72,8 +100,9 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
   <sc-if value="{{f.plainHeader}}" hint-placeholder-val="{{false}}">
     <header style="flex: 0 0 auto; display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 4px 0 16px; margin-top: 47px">
       <h1 style="flex: 1 1 auto; margin: 0; font-size: 20px; line-height: 30px; font-weight: 600; color: var(--color-text-primary)">{{pageTitle}}</h1>
-      <button type="button" class="nav-btn" aria-label="Account" onClick="{{openAccount}}" style="width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 9999px; background: none; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
+      <button type="button" class="nav-btn" aria-label="Account" onClick="{{openAccount}}" style="position: relative; width: 44px; height: 44px; flex: 0 0 auto; border: 0; border-radius: 9999px; background: none; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
         <x-import component-from-global-scope="UntitledUI.Avatar" size="sm" src="{{me.photo}}" contrast-border="{{true}}" initials="{{me.ini}}" alt="{{me.full}}"></x-import>
+        <sc-if value="{{pp.hidDot}}" hint-placeholder-val="{{false}}"><span aria-label="Pickup request waiting" role="img" style="position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 9999px; background: var(--color-fg-error-secondary); box-shadow: 0 0 0 2px var(--color-bg-primary)"></span></sc-if>
       </button>
     </header>
   </sc-if>
@@ -105,8 +134,9 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
             <span style="font-size: 16px; line-height: 24px; font-weight: 600; color: #FFFFFF">{{brand.school}}</span>
             <span style="font-size: 14px; line-height: 20px; font-weight: 500; color: rgba(255, 255, 255, 0.8)">{{brand.mailroom}}</span>
           </span>
-          <button type="button" class="nav-btn" aria-label="Account" onClick="{{openAccount}}" style="width: 44px; height: 44px; margin-right: -6px; flex: 0 0 auto; border: 0; border-radius: 9999px; background: none; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
+          <button type="button" class="nav-btn" aria-label="Account" onClick="{{openAccount}}" style="position: relative; width: 44px; height: 44px; margin-right: -6px; flex: 0 0 auto; border: 0; border-radius: 9999px; background: none; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer">
             <x-import component-from-global-scope="UntitledUI.Avatar" size="md" class="ring-2 ring-bg-primary" src="{{me.photo}}" contrast-border="{{true}}" initials="{{me.ini}}" alt="{{me.full}}"></x-import>
+            <sc-if value="{{pp.hidDot}}" hint-placeholder-val="{{false}}"><span aria-label="Pickup request waiting" role="img" style="position: absolute; top: 4px; right: 4px; width: 10px; height: 10px; border-radius: 9999px; background: var(--color-fg-error-secondary); box-shadow: 0 0 0 2px var(--color-bg-primary)"></span></sc-if>
           </button>
         </div>
     </header>
@@ -116,6 +146,8 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         <h1 style="margin: 8px 0 0; font-size: 30px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em; text-wrap: balance; color: #FFFFFF">{{band.greeting}}</h1>
         <!-- Summary card: see-through tint of the school color; the whole card opens All my items (replaces the sticky footer). -->
         <button type="button" class="row-btn sum-card" onClick="{{openItems}}" aria-label="{{band.summaryAria}}" style="margin-top: 12px; width: 100%; min-height: 64px; display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 16px; border: 0; border-radius: 16px; background: rgba(255, 255, 255, 0.12); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16); font: inherit; text-align: left; cursor: pointer">
+          <!-- Delivery CTRL mark (product branding), solid white in the same 40pt soft-white circle the place cards use for their icons. -->
+          <span aria-hidden="true" style="flex: 0 0 auto; width: 40px; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.16); color: #FFFFFF"><svg width="26" height="26" viewBox="0 0 1024 1024" aria-hidden="true"><path fill="currentColor" d="M202.8,512c0-170.3,138.6-309,309-309.2h84.9s0,87.9,0,87.9h-84.9c-121.9,0-221.1,99.4-221.1,221.3,0,122,99.2,221.3,221.3,221.3,122,0,221.3-99.3,221.3-221.3V202.8s87.9,0,87.9,0v309.2c0,170.5-138.7,309.2-309.2,309.2-170.5,0-309.2-138.7-309.2-309.2Z"></path><path fill="currentColor" d="M512,709c-108.6,0-197-88.4-197-197,0-108.5,88.3-196.9,196.8-197h84.9s0,87.9,0,87.9h-84.9c-60.1,0-109,49-109,109.1,0,60.1,48.9,109.1,109.1,109.1,60.2,0,109.1-48.9,109.1-109.1V202.8s87.9,0,87.9,0v309.2c0,108.6-88.4,197-197,197Z"></path></svg></span>
           <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column">
             <span style="font-size: 16px; line-height: 24px; font-weight: 600; color: #FFFFFF">{{band.summary}}</span>
             <sc-if value="{{band.hasSub}}" hint-placeholder-val="{{true}}">
@@ -125,6 +157,21 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
           <span style="display: flex; color: rgba(255, 255, 255, 0.85)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span>
         </button>
       </section>
+
+      <!-- Pickup requests: one card per student; the chevron opens the request sheet. -->
+      <sc-for list="{{pp.homeReqs}}" as="r" hint-placeholder-count="0">
+        <!-- Swipe left to reveal "Hide request" behind the card (iOS swipe action). -->
+        <div class="pp-swipe {{r.cls}}" style="position: relative; flex: 0 0 auto">
+        <div class="pp-swipe-act" style="position: absolute; top: 1px; right: 1px; bottom: 1px; width: 120px; display: flex">
+          <button type="button" onClick="{{r.hide}}" tabIndex="-1" style="flex: 1 1 auto; border: 0; border-radius: 16px; background: var(--color-bg-primary-solid); color: #ffffff; font: inherit; font-size: 14px; line-height: 20px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-5" aria-hidden="true"></x-import>Hide request</button>
+        </div>
+        <button type="button" class="row-btn pp-swipe-card" onClick="{{r.open}}" aria-label="{{r.aria}}" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px; border: 0; border-radius: 16px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary), 0 1px 2px rgba(10, 13, 18, 0.05), 0 6px 16px -6px rgba(10, 13, 18, 0.10); font: inherit; text-align: left; cursor: pointer">
+          <x-import component-from-global-scope="UntitledUI.Avatar" size="md" src="{{r.photo}}" initials="{{r.ini}}" alt="{{r.name}}"></x-import>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{r.name}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Wants you to pick up their packages</span></span>
+          <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span>
+        </button>
+        </div>
+      </sc-for>
 
       <sc-if value="{{qb.show}}" hint-placeholder-val="{{false}}">
         <button type="button" class="row-btn" onClick="{{goPickup}}" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 0; border-radius: 12px; background: var(--color-bg-brand-primary); box-shadow: 0 0 0 1px var(--color-border-brand); font: inherit; text-align: left; cursor: pointer">
@@ -551,6 +598,15 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         </section>
       </sc-if>
 
+      <!-- Can't make it: under the ready items (what a pickup person would collect), above Being processed. Quiet shortcut into the same Add a pickup person sheet (kept out of the footer so Pick up stays the one strong action). -->
+      <sc-if value="{{sp.showPickup}}" hint-placeholder-val="{{true}}">
+        <!-- White card = tappable. Same anatomy as the Notes and Activity cards. -->
+        <button type="button" class="row-btn" onClick="{{pp.openAdd}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; margin-top: -4px; padding: 12px; border: 0; border-radius: 16px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary), 0 1px 2px rgba(10, 13, 18, 0.05); font: inherit; text-align: left; cursor: pointer">
+          <span aria-hidden="true" style="align-self: flex-start; margin-top: 4px; flex: 0 0 32px; width: 32px; height: 32px; border-radius: 9999px; background: var(--color-bg-secondary); color: var(--color-fg-quaternary); display: flex; align-items: center; justify-content: center"><x-import component-from-global-scope="UntitledUI.Icons.UserPlus01" class="size-4" aria-hidden="true"></x-import></span>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">Can’t make it?</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-secondary)">Add a pickup person</span></span>
+          <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span>
+        </button>
+      </sc-if>
       <sc-if value="{{sp.hasProc}}" hint-placeholder-val="{{true}}">
         <section style="margin-top: 16px; display: flex; flex-direction: column">
           <h3 style="margin: 0; font-size: 20px; line-height: 30px; font-weight: 600; color: var(--color-text-primary)">{{sp.procLabel}}</h3>
@@ -805,6 +861,80 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
     </footer>
   </sc-if>
 
+  <!-- ============ PICKUP PEOPLE ============ -->
+  <!-- Two open lists: who can pick up for me (I invite them) and who I can pick up for (they invited me, I accepted). Requests sit at the top of the second list. -->
+  <sc-if value="{{f.people}}" hint-placeholder-val="{{false}}">
+    <main class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 24px 16px 34px">
+      <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">People on your list can collect your packages at the window. Staff check their photo ID.</div>
+      <div style="margin-top: 24px; padding: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Can pick up for me</div>
+      <div style="margin: 0 -16px">
+        <sc-for list="{{pp.mine}}" as="r" hint-placeholder-count="2">
+          <button type="button" class="row-btn" onClick="{{r.open}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 10px 16px; border: 0; border-top: 1px solid {{r.rule}}; background: none; font: inherit; text-align: left; cursor: pointer"><x-import component-from-global-scope="UntitledUI.Avatar" size="md" initials="{{r.ini}}" alt="{{r.name}}"></x-import><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">{{r.name}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{r.sub}}</span></span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
+        </sc-for>
+        <button type="button" class="row-btn" onClick="{{pp.openAdd}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid {{pp.addRule}}; background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; width: 40px; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; background: var(--color-bg-brand-primary); color: var(--color-fg-brand-primary)"><x-import component-from-global-scope="UntitledUI.Icons.Plus" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-brand-secondary)">Add a pickup person</span></button>
+      </div>
+      <div style="margin-top: 24px; padding: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">I can pick up for</div>
+      <sc-if value="{{pp.hasFor}}" hint-placeholder-val="{{true}}">
+        <div style="margin: 0 -16px">
+        <sc-for list="{{pp.forRows}}" as="r" hint-placeholder-count="2">
+          <button type="button" class="row-btn {{r.cls}}" onClick="{{r.open}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 10px 16px; border: 0; border-top: 1px solid {{r.rule}}; background: none; font: inherit; text-align: left; cursor: pointer"><x-import component-from-global-scope="UntitledUI.Avatar" size="md" src="{{r.photo}}" initials="{{r.ini}}" alt="{{r.name}}"></x-import><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">{{r.name}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{r.sub}}</span></span><sc-if value="{{r.isReq}}" hint-placeholder-val="{{false}}"><x-import component-from-global-scope="UntitledUI.Badge" type="pill-color" color="brand" size="sm">New</x-import></sc-if><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
+        </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{pp.noFor}}" hint-placeholder-val="{{false}}">
+        <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">When another student adds you and you accept, they show up here.</div>
+      </sc-if>
+    </main>
+  </sc-if>
+
+  <!-- Add a student: exact school email only (no browsing the directory). The match shows once the email is exact. -->
+  <sc-if value="{{f.addStudent}}" hint-placeholder-val="{{false}}">
+    <main class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding: 24px 16px 34px">
+      <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">They get a request in the app. Once they accept, they can pick up your packages.</div>
+      <div onFocus="{{kb.focusEmail}}" onBlur="{{kb.blur}}">
+        <x-import component-from-global-scope="UntitledUI.Input" size="lg" type="email" label="School email" placeholder="name@northbridge.edu" value="{{pp.email}}" on-change="{{pp.setEmail}}" is-invalid="{{pp.hasErr}}" hint="{{pp.err}}"></x-import>
+      </div>
+      <sc-if value="{{pp.hasMatch}}" hint-placeholder-val="{{false}}">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary)">
+          <x-import component-from-global-scope="UntitledUI.Avatar" size="md" initials="{{pp.matchIni}}" alt="{{pp.matchName}}"></x-import>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">{{pp.matchName}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Student · {{brand.school}}</span></span>
+          <span style="display: flex; color: var(--color-fg-success-primary)"><x-import component-from-global-scope="UntitledUI.Icons.CheckCircle" class="size-5" aria-hidden="true"></x-import></span>
+        </div>
+      </sc-if>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary)">When can they pick up?</span>
+        <div class="fullw pp-range-btn"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" icon-leading="{{ic.Calendar}}" on-press="{{pp.openDates}}">{{pp.rangeLabel}}</x-import></div>
+        <span style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Leave it open and remove them anytime.</span>
+      </div>
+      <!-- Prototype only: test emails as a quiet dev-tools row (tap a name to fill the email). Not product UI. -->
+      <div style="font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 11px; line-height: 16px; color: #717680">Prototype test emails: <sc-for list="{{pp.testEmails}}" as="t" hint-placeholder-count="3"><button type="button" onClick="{{t.fill}}" style="border: 0; padding: 0; background: none; font: inherit; color: inherit; text-decoration: underline; cursor: pointer">{{t.label}}</button>{{t.sep}}</sc-for></div>
+    </main>
+    <footer style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; padding: 12px 16px 34px; border-top: 1px solid var(--color-border-secondary); background: var(--color-bg-primary)">
+      <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="primary" size="lg" on-press="{{pp.sendStudent}}">Send request</x-import></div>
+    </footer>
+  </sc-if>
+
+  <!-- Add someone else: not a student (no app). Active right away; staff check their photo ID at the window. -->
+  <sc-if value="{{f.addGuest}}" hint-placeholder-val="{{false}}">
+    <main class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; padding: 24px 16px 34px">
+      <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">For someone who isn’t a student, like a parent. They don’t need the app. Staff check their photo ID at the window.</div>
+      <div onFocus="{{kb.focusFirst}}" onBlur="{{kb.blur}}">
+        <x-import component-from-global-scope="UntitledUI.Input" size="lg" label="First name" placeholder="Maria" value="{{pp.first}}" on-change="{{pp.setFirst}}" is-invalid="{{pp.firstBad}}" hint="{{pp.firstErr}}"></x-import>
+      </div>
+      <div onFocus="{{kb.focusLast}}" onBlur="{{kb.blur}}">
+        <x-import component-from-global-scope="UntitledUI.Input" size="lg" label="Last name" placeholder="Lopez" value="{{pp.last}}" on-change="{{pp.setLast}}" is-invalid="{{pp.lastBad}}" hint="{{pp.lastErr}}"></x-import>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <span style="font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary)">When can they pick up?</span>
+        <div class="fullw pp-range-btn"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" icon-leading="{{ic.Calendar}}" on-press="{{pp.openDates}}">{{pp.rangeLabel}}</x-import></div>
+        <span style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Leave it open and remove them anytime.</span>
+      </div>
+    </main>
+    <footer style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 12px; padding: 12px 16px 34px; border-top: 1px solid var(--color-border-secondary); background: var(--color-bg-primary)">
+      <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="primary" size="lg" on-press="{{pp.sendGuest}}">Add pickup person</x-import></div>
+    </footer>
+  </sc-if>
+
   <!-- ============ ACCOUNT ============ -->
   <sc-if value="{{f.account}}" hint-placeholder-val="{{false}}">
     <main class="scroll" style="flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; padding: 8px 16px 34px">
@@ -818,6 +948,13 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         <div style="font-size: 20px; line-height: 30px; font-weight: 600; color: var(--color-text-primary); text-align: center">{{me.full}}</div>
         <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Student ID 2048-1173 · Mailbox 4417</div>
         <div style="font-size: 12px; line-height: 18px; color: var(--color-text-quaternary)">Managed by {{brand.school}}</div>
+      </div>
+      <!-- Pickup first: people and requests can need action; notification settings are set once. -->
+      <div style="margin-top: 24px; padding: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Pickup</div>
+      <div style="margin: 0 -16px">
+        <button type="button" class="row-btn" onClick="{{pp.openPage}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid transparent; background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.UserCheck01" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Pickup people</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{pp.acctSub}}</span></span><sc-if value="{{pp.hasReq}}" hint-placeholder-val="{{true}}"><x-import component-from-global-scope="UntitledUI.Badge" type="pill-color" color="brand" size="sm">{{pp.reqBadge}}</x-import></sc-if><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
+        <button type="button" class="row-btn" onClick="{{ac.soon}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.Building02" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Default place</span></span><span style="flex: 0 0 auto; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Hollis Hall</span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
+        <button type="button" class="row-btn" onClick="{{ac.soon}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.PauseCircle" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Away / hold my mail</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Off</span></span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
       </div>
       <div style="margin-top: 24px; padding: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Notify me by</div>
       <div style="margin: 0 -16px">
@@ -840,12 +977,6 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
       <div style="margin: 0 -16px">
         <button type="button" class="row-btn" onClick="{{ac.openSettings}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid transparent; background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.MarkerPin01" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Location access</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{ac.permSub}}</span></span><span style="flex: 0 0 auto; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{ac.permLabel}}</span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
         <div style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.CheckCircle" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Auto check-in when I’m nearby</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Within 0.3 mi when you’re headed there</span></span><x-import component-from-global-scope="UntitledUI.Toggle" size="md" aria-label="Auto check-in when I’m nearby" is-selected="{{ac.auto}}" on-change="{{ac.autoSet}}"></x-import></div>
-      </div>
-      <div style="margin-top: 24px; padding: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Pickup</div>
-      <div style="margin: 0 -16px">
-        <button type="button" class="row-btn" onClick="{{ac.soon}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid transparent; background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.UserCheck01" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">People who can pick up for me</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Mom (Linda Ellis)</span></span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
-        <button type="button" class="row-btn" onClick="{{ac.soon}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.Building02" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Default place</span></span><span style="flex: 0 0 auto; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Hollis Hall</span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
-        <button type="button" class="row-btn" onClick="{{ac.soon}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 10px 16px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left; cursor: pointer"><span style="flex: 0 0 auto; display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.PauseCircle" class="size-5" aria-hidden="true"></x-import></span><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Away / hold my mail</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Off</span></span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
       </div>
       <div style="margin-top: 24px; padding: 0 0 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">Help</div>
       <div style="margin: 0 -16px">
@@ -1083,6 +1214,81 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
     </button>
   </sc-if>
 
+  <!-- Pickup people: choose who to add (half sheet). Opened from the Pickup people page and the place page. -->
+  <sc-if value="{{pp.addSheet}}" hint-placeholder-val="{{false}}">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Add a pickup person" full="{{true}}" top="{{422}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="margin: 0 -20px; font-family: Inter, sans-serif">
+        <button type="button" class="row-btn" onClick="{{pp.pickStudent}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px 20px; border: 0; background: none; font: inherit; text-align: left; cursor: pointer"><x-import component-from-global-scope="UntitledUI.FeaturedIcon" icon="{{ic.GraduationHat02}}" color="brand" theme="light" size="md"></x-import><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">A student</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Uses their school email. They accept in the app.</span></span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
+        <button type="button" class="row-btn" onClick="{{pp.pickGuest}}" style="display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 12px 20px; border: 0; border-top: 1px solid var(--color-border-secondary); background: none; font: inherit; text-align: left; cursor: pointer"><x-import component-from-global-scope="UntitledUI.FeaturedIcon" icon="{{ic.User01}}" color="gray" theme="light" size="md"></x-import><span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 500; color: var(--color-text-primary)">Someone else</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Like a parent. Staff check their photo ID.</span></span><span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span></button>
+      </div>
+    </x-import>
+  </sc-if>
+
+  <!-- Pickup dates: full sheet with the Untitled UI RangeCalendar (its own mobile layout: start/end fields, presets, one month). -->
+  <sc-if value="{{pp.datesSheet}}" hint-placeholder-val="{{false}}">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="When can they pick up?" full="{{true}}" top="{{96}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding-bottom: 34px; font-family: Inter, sans-serif">
+        <!-- Start · End: both dates at a glance; the outlined one is what the next tap on the calendar sets. -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+          <sc-for list="{{pp.edges}}" as="x" hint-placeholder-count="2">
+            <button type="button" onClick="{{x.go}}" aria-pressed="{{x.on}}" style="display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-height: 56px; padding: 8px 12px; border: 0; border-radius: 8px; background: var(--color-bg-primary); box-shadow: {{x.ring}}; font: inherit; text-align: left; cursor: pointer"><span style="font-size: 12px; line-height: 18px; color: var(--color-text-tertiary)">{{x.label}}</span><span style="font-size: 16px; line-height: 24px; font-weight: 500; color: {{x.fg}}">{{x.value}}</span></button>
+          </sc-for>
+        </div>
+        <div style="display: flex; gap: 8px">
+          <sc-for list="{{pp.chips}}" as="c" hint-placeholder-count="3">
+            <div class="pp-chip" style="flex: 1 1 0; min-width: 0"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="md" on-press="{{c.go}}">{{c.label}}</x-import></div>
+          </sc-for>
+        </div>
+        <div class="pp-cal" style="margin: 0 -20px">
+          <x-import component-from-global-scope="UntitledUI.RangeCalendar" aria-label="Pickup dates" is-read-only="{{true}}" value="{{pp.calValue}}" min-value="{{pp.calMin}}" focused-value="{{pp.calFocus}}" on-focus-change="{{pp.calFocusSet}}"></x-import>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto">
+          <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="primary" size="lg" on-press="{{pp.datesDone}}">Done</x-import></div>
+          <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" on-press="{{pp.datesOpen}}">No end date</x-import></div>
+        </div>
+      </div>
+    </x-import>
+  </sc-if>
+
+  <!-- Prototype plumbing (invisible): one hidden RangeCalendar so the app can borrow Untitled UI's own date type. -->
+  <sc-if value="{{pp.probe}}" hint-placeholder-val="{{false}}">
+    <div class="pp-cd-probe" aria-hidden="true" style="position: absolute; left: -9999px; top: 0; width: 360px; visibility: hidden; pointer-events: none"><x-import component-from-global-scope="UntitledUI.RangeCalendar" aria-label="Probe"></x-import></div>
+  </sc-if>
+
+  <!-- Pickup request: same half sheet from the Home card and the Pickup people row. -->
+  <sc-if value="{{pp.reqSheet}}" hint-placeholder-val="{{false}}">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Pickup request" full="{{true}}" top="{{422}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding-bottom: 34px; font-family: Inter, sans-serif">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <x-import component-from-global-scope="UntitledUI.Avatar" size="md" src="{{pp.selPhoto}}" initials="{{pp.selIni}}" alt="{{pp.selName}}"></x-import>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{pp.selName}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Student · {{brand.school}}</span></span>
+        </div>
+        <div style="font-size: 16px; line-height: 24px; color: var(--color-text-secondary)">{{pp.reqText}}</div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto">
+          <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="primary" size="lg" on-press="{{pp.accept}}">Accept</x-import></div>
+          <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" on-press="{{pp.decline}}">Decline</x-import></div>
+          <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: -4px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary)"><span style="display: flex; padding-top: 2px; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-4" aria-hidden="true"></x-import></span><span>{{pp.declineNote}}</span></div>
+        </div>
+      </div>
+    </x-import>
+  </sc-if>
+
+  <!-- Pickup person details: remove someone, cancel a request, or stop picking up for someone. -->
+  <sc-if value="{{pp.personSheet}}" hint-placeholder-val="{{false}}">
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="{{pp.selName}}" full="{{true}}" top="{{422}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding-bottom: 34px; font-family: Inter, sans-serif">
+        <div style="display: flex; align-items: center; gap: 12px">
+          <x-import component-from-global-scope="UntitledUI.Avatar" size="lg" src="{{pp.selPhoto}}" initials="{{pp.selIni}}" alt="{{pp.selName}}"></x-import>
+          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{pp.selKind}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{pp.selStatus}}</span></span>
+        </div>
+        <div style="font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{pp.selNote}}</div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto">
+          <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary-destructive" size="lg" on-press="{{pp.remove}}">{{pp.removeLabel}}</x-import></div>
+        </div>
+      </div>
+    </x-import>
+  </sc-if>
+
   <!-- Edit photo: half sheet. Staff see this photo at pickup. -->
   <sc-if value="{{ac.photoSheet}}" hint-placeholder-val="{{false}}">
     <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Profile photo" full="{{true}}" top="{{422}}" z-index="{{60}}" on-close="{{closeSheet}}">
@@ -1159,6 +1365,43 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
     </x-import>
   </sc-if>
 
+  <!-- ============ iOS KEYBOARD (device chrome, drawn by hand; same as the Mobile Pickup Queue) ============ -->
+  <sc-if value="{{kb.open}}" hint-placeholder-val="{{false}}">
+    <div class="kb-anim" role="group" aria-label="Keyboard" onMouseDown="{{kb.hold}}" style="position: absolute; left: 0; right: 0; bottom: 0; height: 336px; z-index: 76; box-sizing: border-box; padding: 6px 3px 0; display: flex; flex-direction: column; gap: 12px; background: #D1D4DA; font-family: -apple-system, Inter, sans-serif; color: #000000; user-select: none">
+      <div style="display: flex; height: 36px; margin: 0 -3px -2px; align-items: center">
+        <sc-for list="{{kb.sugs}}" as="s" hint-placeholder-count="3">
+          <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{s.pick}}" style="flex: 1 1 0; height: 36px; border: 0; border-left: {{s.rule}}; background: none; font: inherit; font-size: 16px; color: #000000; cursor: pointer; overflow: hidden; text-overflow: ellipsis; white-space: nowrap">{{s.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 6px; justify-content: center">
+        <sc-for list="{{kb.r1}}" as="k" hint-placeholder-count="10">
+          <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{k.press}}" style="flex: 0 0 32px; height: 42px; border: 0; border-radius: 5px; background: #FFFFFF; box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 22px; color: #000000; padding: 0; cursor: pointer">{{k.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 6px; justify-content: center">
+        <sc-for list="{{kb.r2}}" as="k" hint-placeholder-count="9">
+          <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{k.press}}" style="flex: 0 0 32px; height: 42px; border: 0; border-radius: 5px; background: #FFFFFF; box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 22px; color: #000000; padding: 0; cursor: pointer">{{k.label}}</button>
+        </sc-for>
+      </div>
+      <div style="display: flex; gap: 6px; justify-content: center; align-items: center">
+        <button type="button" class="kk" aria-label="Shift" onMouseDown="{{kb.hold}}" onClick="{{kb.shift}}" style="flex: 0 0 42px; height: 42px; margin-right: 8px; border: 0; border-radius: 5px; background: {{kb.shiftBg}}; box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 17px; color: #000000; padding: 0; cursor: pointer">{{kb.shiftGlyph}}</button>
+        <sc-for list="{{kb.r3}}" as="k" hint-placeholder-count="7">
+          <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{k.press}}" style="flex: 0 0 32px; height: 42px; border: 0; border-radius: 5px; background: #FFFFFF; box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 22px; color: #000000; padding: 0; cursor: pointer">{{k.label}}</button>
+        </sc-for>
+        <button type="button" class="kk" aria-label="Delete" onMouseDown="{{kb.hold}}" onClick="{{kb.del}}" style="flex: 0 0 42px; height: 42px; margin-left: 8px; border: 0; border-radius: 5px; background: #ABB0BA; box-shadow: 0 1px 0 #898A8D; color: #000000; padding: 0; display: flex; align-items: center; justify-content: center; cursor: pointer"><svg width="23" height="17" viewBox="0 0 23 17" aria-hidden="true"><path d="M7.3 1h13.2A1.5 1.5 0 0 1 22 2.5v12a1.5 1.5 0 0 1-1.5 1.5H7.3L1 8.5z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path><path d="m11 5.5 6 6m0-6-6 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg></button>
+      </div>
+      <div style="display: flex; gap: 6px">
+        <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{kb.mode}}" style="flex: 0 0 88px; height: 42px; border: 0; border-radius: 5px; background: #ABB0BA; box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 16px; color: #000000; cursor: pointer">{{kb.modeLabel}}</button>
+        <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{kb.space}}" style="flex: 1 1 auto; height: 42px; border: 0; border-radius: 5px; background: #FFFFFF; box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 16px; color: #000000; cursor: pointer">space</button>
+        <button type="button" class="kk" onMouseDown="{{kb.hold}}" onClick="{{kb.ret}}" style="flex: 0 0 88px; height: 42px; border: 0; border-radius: 5px; background: var(--color-bg-brand-solid); box-shadow: 0 1px 0 #898A8D; font: inherit; font-size: 16px; font-weight: 500; color: #FFFFFF; cursor: pointer">done</button>
+      </div>
+      <div aria-hidden="true" style="display: flex; justify-content: space-between; padding: 4px 24px 0; color: #4B4F57">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="9.5"></circle><path d="M8 14.5c1 1.3 2.4 2 4 2s3-.7 4-2"></path><circle cx="9" cy="10" r="0.6" fill="currentColor"></circle><circle cx="15" cy="10" r="0.6" fill="currentColor"></circle></svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"></rect><path d="M6 11a6 6 0 0 0 12 0M12 17v4"></path></svg>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- ============ TOAST ============ -->
   <sc-if value="{{toast.show}}" hint-placeholder-val="{{false}}">
     <div style="position: absolute; left: 16px; right: 16px; bottom: {{toast.bottom}}; z-index: 78">
@@ -1201,6 +1444,10 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         <span>Booking</span>
         <sc-for list="{{proto.book}}" as="b" hint-placeholder-count="2">
           <button type="button" class="uu-btn" aria-pressed="{{b.on}}" data-tip="{{b.tip}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
+        </sc-for>
+        <span>Pickup people</span>
+        <sc-for list="{{proto.pp}}" as="b" hint-placeholder-count="3">
+          <button type="button" class="uu-btn" data-tip="{{b.tip}}" disabled="{{b.off}}" onClick="{{b.go}}" style="background: none">{{b.label}}</button>
         </sc-for>
         <span>Location permission</span>
         <sc-for list="{{proto.perm}}" as="b" hint-placeholder-count="2">
@@ -1306,6 +1553,11 @@ class Component extends DCLogic {
       case 'c12': return set({ stack: [{ v: 'item', id: 'l1' }] });
       case 'e1': set(Object.assign({}, spot, { skip: { a1: true, a2: true }, selWarn: true })); this._selT = setTimeout(() => this.setState({ selWarn: false }), 2500); return;
       case 'e2': return set(sheet('locating', { locOff: true }), () => this.startLocating('hollis'));
+      case 'c13': return set({ stack: [{ v: 'account' }, { v: 'people' }, { v: 'addStudent' }], addEmail: 'mei.lin@northbridge.edu' });
+      case 'c14': return set({ stack: [{ v: 'account' }, { v: 'people' }, { v: 'addGuest' }], addFirst: 'Maria', addLast: 'Lopez', addRange: { s: '2026-10-20', e: '2026-12-18' } });
+      case 'c15': return set({ sheet: 'ppReq', ppSel: 'pf0' });
+      case 'e3': return set({ stack: [{ v: 'account' }, { v: 'people' }, { v: 'addStudent' }], addEmail: 'mei.lin@northbrige.edu' }, () => this.ppSendStudent());
+      case 'e4': return set({ stack: [{ v: 'account' }, { v: 'people' }, { v: 'addStudent' }], addEmail: 'mei.lin@northbridge.edu', pickers: base.pickers.concat([{ id: 'pk9', name: 'Mei Lin', email: 'mei.lin@northbridge.edu', kind: 'student', status: 'pending', until: '' }]) }, () => this.ppSendStudent());
     }
   }
   constructor(props) {
@@ -1346,7 +1598,11 @@ class Component extends DCLogic {
       q: null, done: null, booking: null, busyDay: 'thu', busyHour: null, remind: true,
       filter: 'all', notif: { push: true, sms: true, email: false }, toast: null, protoOpen: false, nextTicket: 118,
       heading: null, pstep: 'choose', pspot: null, pmode: 'pickup', permAsked: false, perm: 'always', notice: null, editBk: false,
-      brandColor: null, logo: true, nameLen: 'short', base: 'hollis'
+      brandColor: null, logo: true, nameLen: 'short', base: 'hollis',
+      // Pickup people: who can pick up for Jordan, and who Jordan can pick up for (requests wait here until answered).
+      pickers: [{ id: 'pk1', name: 'Linda Ellis', rel: 'Mom', kind: 'guest', status: 'active', until: '' }],
+      pickFor: [{ id: 'pf0', name: 'Grace Kim', status: 'request', until: 'Fri, Dec 18', photo: 'assets/3fd60082e0b000f512e5f78a69105789.jpg' }, { id: 'pf1', name: 'Priya Natarajan', status: 'active', until: '' }],
+      ppSel: null, addEmail: '', addFirst: '', addLast: '', addUntil: '', addRange: null, ppDraft: null, addErr: '', kb: null, kbShift: false, kbNum: false
     };
   }
   // Auto check-in: the student crossed 0.3 mi while headed there.
@@ -1419,6 +1675,33 @@ class Component extends DCLogic {
   installGlobal() {
     if (this._installed || typeof document === 'undefined' || !document.addEventListener) return;
     this._installed = true;
+    // Swipe left on a Home request card to show "Hide request" (one card open at a time). Horizontal drags only,
+    // so vertical scrolling still works; mouse drag works the same for desktop testing. A swipe never counts as a tap,
+    // and tapping an open card (or anywhere else) closes it.
+    const OPEN = 136, reduce = () => window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let sw = null, swEat = false;
+    const setX = (card, x, anim) => { card.style.transition = anim && !reduce() ? 'transform 200ms cubic-bezier(.2,.8,.2,1)' : 'none'; card.style.transform = x ? 'translateX(' + x + 'px)' : ''; };
+    const closeOpen = () => { if (this._ppOpenCard) { setX(this._ppOpenCard, 0, true); this._ppOpenCard = null; } };
+    this._ppCloseSwipe = closeOpen;
+    document.addEventListener('pointerdown', (e) => {
+      const card = e.target.closest && e.target.closest('.pp-swipe-card');
+      if (this._ppOpenCard && !(e.target.closest && e.target.closest('.pp-swipe-act'))) { if (card === this._ppOpenCard) swEat = true; closeOpen(); return; }
+      if (card) sw = { card, x: e.clientX, y: e.clientY, on: false };
+    }, true);
+    document.addEventListener('pointermove', (e) => {
+      if (!sw) return;
+      const dx = e.clientX - sw.x, dy = e.clientY - sw.y;
+      if (!sw.on) { if (Math.abs(dy) > 8 && Math.abs(dy) > Math.abs(dx)) { sw = null; return; } if (Math.abs(dx) > 8 && Math.abs(dx) > Math.abs(dy)) sw.on = true; else return; }
+      setX(sw.card, Math.max(-OPEN - 24, Math.min(0, dx)), false);
+    }, true);
+    const end = (e) => {
+      if (!sw) return;
+      if (sw.on) { swEat = true; const dx = e.clientX - sw.x; if (dx < -OPEN / 2) { setX(sw.card, -OPEN, true); this._ppOpenCard = sw.card; } else setX(sw.card, 0, true); }
+      sw = null;
+    };
+    document.addEventListener('pointerup', end, true);
+    document.addEventListener('pointercancel', (e) => { if (sw) { setX(sw.card, 0, true); sw = null; } }, true);
+    document.addEventListener('click', (e) => { if (swEat) { swEat = false; if (e.target.closest && e.target.closest('.pp-swipe-card')) { e.stopPropagation(); e.preventDefault(); } } }, true);
     // Desktop testing: mouse click-and-drag scrolls the hour chart and pages the week selector like a finger swipe;
     // the scroll wheel scrolls the chart sideways. A drag of 5px+ never counts as a click. Touch is unchanged.
     let drag = null, eatClick = false;
@@ -1456,6 +1739,123 @@ class Component extends DCLogic {
     const recent = this._pressedAt && Date.now() - this._pressedAt < 800;
     const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (recent && !reduce) { clearTimeout(this._navT); this._navT = setTimeout(fn, 120); } else fn();
+  }
+  // ---------- keyboard (drawn iPhone keyboard; same behavior as the Mobile Pickup Queue) ----------
+  kbOpen(t) { clearTimeout(this._blurT); if (this.state.kb !== t) this.setState({ kb: t, kbShift: t !== 'email', kbNum: false }); }
+  kbBlur() { clearTimeout(this._blurT); this._blurT = setTimeout(() => this.setState({ kb: null }), 60); }
+  kbGet(t) { const s = this.state; return t === 'email' ? s.addEmail || '' : t === 'first' ? s.addFirst || '' : t === 'last' ? s.addLast || '' : ''; }
+  kbSet(t, v) { if (t === 'email') this.setState({ addEmail: v, addErr: '' }); else if (t === 'first') this.setState({ addFirst: v, addErr: '' }); else if (t === 'last') this.setState({ addLast: v, addErr: '' }); }
+  kbType(ch) { const t = this.state.kb; if (!t) return; const c = this.state.kbShift ? ch.toUpperCase() : ch; this.kbSet(t, this.kbGet(t) + c); if (this.state.kbShift) this.setState({ kbShift: false }); }
+  kbClose() { try { const a = document.activeElement; if (a && a.blur) a.blur(); } catch (e) {} clearTimeout(this._blurT); this.setState({ kb: null }); }
+  // ---------- pickup people ----------
+  // Prototype school directory: exact school email only (students can't browse the roster).
+  ppDir() { return { 'mei.lin@northbridge.edu': 'Mei Lin', 'sam.chen@northbridge.edu': 'Sam Chen', 'ava.thompson@northbridge.edu': 'Ava Thompson', 'priya.natarajan@northbridge.edu': 'Priya Natarajan', 'liam.martinez@northbridge.edu': 'Liam Martinez' }; }
+  // Add a student: returns the error to show, or sends the request and lands on Pickup people.
+  ppSendStudent() {
+    const s = this.state, email = (s.addEmail || '').trim().toLowerCase(), name = this.ppDir()[email];
+    let err = '';
+    if (!email) err = 'Enter their school email.';
+    else if (email === 'jellis@northbridge.edu') err = 'That’s your email. Enter theirs.';
+    else if (!name) err = 'No student at Northbridge has that email. Check the spelling.';
+    else if ((s.pickers || []).some((p) => p.email === email)) err = name + ' is already on your list.';
+    if (err) { this.setState({ addErr: err }); return; }
+    const r = s.addRange, p = { id: 'pk' + Date.now(), name, email, kind: 'student', status: 'pending', until: r && r.e ? this.ppFmt(r.e) : '', starts: r && r.s > this.ppToday() ? this.ppFmt(r.s) : '' };
+    this.ppLand({ pickers: (s.pickers || []).concat([p]) });
+    this.showToast('Request sent to ' + name.split(' ')[0]);
+  }
+  ppSendGuest() {
+    const s = this.state, first = (s.addFirst || '').trim(), last = (s.addLast || '').trim();
+    if (!first || !last) { this.setState({ addErr: !first ? 'first' : 'last' }); return; }
+    const name = first + ' ' + last;
+    const r = s.addRange, p = { id: 'pk' + Date.now(), name, kind: 'guest', status: 'active', until: r && r.e ? this.ppFmt(r.e) : '', starts: r && r.s > this.ppToday() ? this.ppFmt(r.s) : '' };
+    this.ppLand({ pickers: (s.pickers || []).concat([p]) });
+    this.showToast(first + ' can now pick up for you');
+  }
+  // After adding: replace the Add screen with Pickup people (so Back returns to where the student started).
+  ppLand(patch) {
+    const stack = this.state.stack.slice(0, -1);
+    const top = stack[stack.length - 1];
+    if (!top || top.v !== 'people') stack.push({ v: 'people' });
+    this.kbClose();
+    this.setState(Object.assign({ stack, sheet: null, addEmail: '', addFirst: '', addLast: '', addUntil: '', addRange: null, ppDraft: null, addErr: '' }, patch));
+  }
+  // Pickup dates. Prototype "today" is Tue, Oct 20 2026. Dates are kept as 'YYYY-MM-DD' and turned into
+  // Untitled UI's own date objects (borrowed from a hidden RangeCalendar, since the bundle doesn't export the type).
+  ppToday() { return '2026-10-20'; }
+  ppFmt(iso) { const [y, m, d] = iso.split('-').map(Number); const dt = new Date(Date.UTC(y, m - 1, d)); return ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dt.getUTCDay()] + ', ' + ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m - 1] + ' ' + d; }
+  ppCD(iso) { const C = typeof window !== 'undefined' && window.__ppCD; if (!C || !iso) return null; const [y, m, d] = iso.split('-').map(Number); return new C(y, m, d); }
+  ppIso(v) { return v ? v.year + '-' + String(v.month).padStart(2, '0') + '-' + String(v.day).padStart(2, '0') : ''; }
+  ppRangeText(r) {
+    // Same words as the sheet's Start box: "Today", then an end date or "no end date".
+    if (!r) return 'Today · no end date';
+    const start = r.s <= this.ppToday() ? 'Today' : this.ppFmt(r.s);
+    return r.e ? start + ' – ' + this.ppFmt(r.e) : start + ' · no end date';
+  }
+  // A tap on a day (the calendar is read-only; this sets the dates): fills whichever of Start or End is outlined.
+  ppTap(iso) {
+    const st = this.state, d = st.ppDraft || { s: this.ppToday(), e: '' };
+    if (iso < this.ppToday()) return;
+    let s = d.s, e = d.e, edge = st.ppEdge;
+    if (edge === 'start') { s = iso; if (e && e < iso) e = ''; edge = 'end'; }
+    else if (edge === 'end') { if (iso < s) s = iso; else { e = iso; edge = null; } }
+    else { s = iso; e = ''; edge = 'end'; }
+    this.setState({ ppDraft: { s, e }, ppEdge: edge });
+  }
+  ppProbe() {
+    if (typeof window === 'undefined') return;
+    // Day taps: read the date from the cell's label ("Tuesday, December 1, 2026") in the capture phase, before the calendar handles it.
+    window.__ppTapFn = (iso) => this.ppTap(iso);
+    if (!window.__ppTapOn && typeof document !== 'undefined') {
+      window.__ppTapOn = true;
+      const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      document.addEventListener('click', (ev) => {
+        const el = ev.target && ev.target.closest && ev.target.closest('.pp-cal td [role="button"][aria-label]');
+        if (!el || el.getAttribute('aria-disabled') === 'true') return;
+        const m = (el.getAttribute('aria-label') || '').match(/(January|February|March|April|May|June|July|August|September|October|November|December) (\d{1,2}), (\d{4})/);
+        if (!m) return;
+        window.__ppTapFn && window.__ppTapFn(m[3] + '-' + String(MON.indexOf(m[1]) + 1).padStart(2, '0') + '-' + m[2].padStart(2, '0'));
+      }, true);
+    }
+    if (window.__ppCD || this._cdT) return;
+    this._cdT = setTimeout(() => {
+      this._cdT = null;
+      const els = document.querySelectorAll('.pp-cd-probe [role="gridcell"], .pp-cd-probe [role="gridcell"] *');
+      for (const el of els) {
+        const k = Object.keys(el).find((x) => x.indexOf('__reactFiber$') === 0);
+        let f = k ? el[k] : null;
+        while (f) { const d = f.memoizedProps && f.memoizedProps.date; if (d && d.calendar && d.constructor) { window.__ppCD = d.constructor; this.setState({ cdTick: Date.now() }); return; } f = f.return; }
+      }
+      this.setState({ cdTick: Date.now() });
+    }, 60);
+  }
+  // Answering a request: close the sheet, let the Home card (and a declined row) fade out and close up, then update the list.
+  ppAnswer(id, kind, apply) {
+    const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    clearTimeout(this._ppT);
+    this.setState({ sheet: null, ppSel: null, ppLeaving: id, ppLeaveKind: kind });
+    this._ppT = setTimeout(() => { apply(); this.setState({ ppLeaving: null, ppLeaveKind: null }); }, reduce ? 0 : 320);
+  }
+  // Hide a request from Home without answering it: the card fades out and the request waits in Account › Pickup people.
+  // Nothing is sent to the requester. Undo in the toast brings the card back.
+  ppHide(id) {
+    this._ppOpenCard = null;
+    const reduce = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    clearTimeout(this._ppT);
+    this.setState({ ppLeaving: id, ppLeaveKind: 'hide' });
+    this._ppT = setTimeout(() => {
+      this.setState({ pickFor: (this.state.pickFor || []).map((x) => (x.id === id ? Object.assign({}, x, { hidden: true }) : x)), ppLeaving: null, ppLeaveKind: null });
+      clearTimeout(this._toastT);
+      this.setState({ toast: { text: 'Moved to Pickup people', variant: 'neutral', act: 'ppHide', id } });
+      this._toastT = setTimeout(() => this.setState({ toast: null }), 5000);
+    }, reduce ? 0 : 320);
+  }
+  // Simulate › Get a pickup request: the next student in line asks Jordan to pick up for them.
+  ppIncoming() {
+    const s = this.state, have = (s.pickFor || []).map((x) => x.name);
+    const next = [['Sam Chen', 'Fri, Dec 18'], ['Ava Thompson', '']].find(([n]) => have.indexOf(n) < 0);
+    if (!next) { this.showToast('No more sample requests', 'neutral'); this.setState({ protoOpen: false }); return; }
+    this.setState({ protoOpen: false, pickFor: [{ id: 'pf' + Date.now(), name: next[0], status: 'request', until: next[1] }].concat(s.pickFor || []) });
+    this.showToast('New pickup request from ' + next[0], 'info');
   }
   push(v, id) { this.navLater(() => this.setState({ stack: this.state.stack.concat([{ v, id }]), sheet: null, protoOpen: false })); }
 
@@ -2060,7 +2460,8 @@ class Component extends DCLogic {
     const f = {
       tabs: !view, plainHeader: false, home: !view, items: view === 'items', pickup: view === 'pickup',
       pushed: !!view, spot: view === 'spot' && !!s, locker: false,
-      item: view === 'item', busy: view === 'busy', account: view === 'account'
+      item: view === 'item', busy: view === 'busy', account: view === 'account',
+      people: view === 'people', addStudent: view === 'addStudent', addGuest: view === 'addGuest'
     };
     const NAMES = { short: ['Jordan', 'Ellis'], long: ['Christopher', 'Montgomery-Alvarez'] };
     const nm = NAMES[st.nameLen || 'short'];
@@ -2078,8 +2479,101 @@ class Component extends DCLogic {
     const chrome = f.home ? { fg: '#FFFFFF', bg: 'transparent' } : { fg: '#000000', bg: 'var(--color-bg-primary)' };
     const scrollAt = (y) => (e) => { const on = (e && e.currentTarget ? e.currentTarget.scrollTop : 0) > y; if (on !== !!this.state.scrolled) this.setState({ scrolled: on }); };
     const spotNav = view === 'spot' && !!s;
-    const pushTitle = view === 'spot' ? '' : view === 'item' ? 'Item details' : view === 'busy' ? (bkg && bkg.spot === top.id ? 'Change pickup time' : 'Schedule pickup') : view === 'account' ? 'Account' : view === 'items' ? 'My Items' : view === 'pickup' ? (pk.heading ? 'On your way' : pk.done ? 'Picked up' : 'Your pickup') : '';
-    const toastBottom = f.tabs ? '46px' : f.spot ? '218px' : f.busy ? '102px' : f.pickup ? '158px' : '46px';
+    const pushTitle = view === 'spot' ? '' : view === 'item' ? 'Item details' : view === 'busy' ? (bkg && bkg.spot === top.id ? 'Change pickup time' : 'Schedule pickup') : view === 'account' ? 'Account' : view === 'people' ? 'Pickup people' : view === 'addStudent' ? 'Add a student' : view === 'addGuest' ? 'Add someone else' : view === 'items' ? 'My Items' : view === 'pickup' ? (pk.heading ? 'On your way' : pk.done ? 'Picked up' : 'Your pickup') : '';
+    const toastBottom = f.tabs ? '46px' : f.spot ? '218px' : f.busy || f.addStudent || f.addGuest ? '102px' : f.pickup ? '158px' : '46px';
+
+
+    // ----- pickup people -----
+    const ppIni = (n) => n.split(' ').map((w) => w[0] || '').join('').slice(0, 2).toUpperCase();
+    const pickers = st.pickers || [], pickFor = st.pickFor || [];
+    const ppReqs = pickFor.filter((x) => x.status === 'request'), ppAct = pickFor.filter((x) => x.status !== 'request');
+    const ppUntil = (u) => (u ? 'Until ' + u : 'No end date');
+    const ppSel = st.ppSel ? pickers.find((x) => x.id === st.ppSel) || pickFor.find((x) => x.id === st.ppSel) : null;
+    const ppMine = ppSel ? pickers.indexOf(ppSel) >= 0 : false;
+    const ppEmail = (st.addEmail || '').trim().toLowerCase(), ppMatch = this.ppDir()[ppEmail] || '';
+    const ppOpen = (x) => () => this.setState({ sheet: x.status === 'request' ? 'ppReq' : 'ppPerson', ppSel: x.id, protoOpen: false });
+    const ppStart = (v) => () => this.setState({ sheet: null, stack: st.stack.concat([{ v }]), addEmail: '', addFirst: '', addLast: '', addUntil: '', addRange: null, ppDraft: null, addErr: '', kb: null, protoOpen: false });
+    this.ppProbe();
+    const pp = {
+      mine: pickers.map((x, i) => ({ name: x.name, ini: ppIni(x.name), rule: i ? RULE : 'transparent', open: ppOpen(x),
+        sub: (x.kind === 'student' ? 'Student' : x.rel || 'Not a student') + ' · ' + (x.status === 'pending' ? 'Waiting for them to accept' : x.starts ? 'Starts ' + x.starts : ppUntil(x.until)) })),
+      addRule: pickers.length ? RULE : 'transparent',
+      forRows: ppReqs.concat(ppAct).map((x, i) => ({ name: x.name, ini: ppIni(x.name), rule: i ? RULE : 'transparent', open: ppOpen(x), isReq: x.status === 'request', photo: x.photo || '', cls: st.ppLeaving === x.id && st.ppLeaveKind === 'decline' ? 'pp-leave-row' : '',
+        sub: x.status === 'request' ? 'Wants you to pick up' : 'Student · ' + ppUntil(x.until) })),
+      hasFor: pickFor.length > 0, noFor: pickFor.length === 0,
+      homeReqs: ppReqs.filter((x) => !x.hidden).map((x) => ({ hide: () => this.ppHide(x.id), hideAria: 'Hide ' + x.name + '\u2019s request from Home', name: x.name, ini: ppIni(x.name), photo: x.photo || '', cls: st.ppLeaving === x.id ? 'pp-leave' : '', open: ppOpen(x), aria: 'Pickup request from ' + x.name })),
+      acctSub: pickers.length ? pickers.map((x) => x.name).join(', ') : 'No one yet', hasReq: ppReqs.length > 0, hidDot: ppReqs.some((x) => x.hidden), reqBadge: plural(ppReqs.length, 'request'),
+      openPage: () => this.push('people'),
+      openAdd: () => this.setState({ sheet: 'ppAdd', protoOpen: false }),
+      pickStudent: ppStart('addStudent'), pickGuest: ppStart('addGuest'),
+      addSheet: st.sheet === 'ppAdd', reqSheet: st.sheet === 'ppReq' && !!ppSel, personSheet: st.sheet === 'ppPerson' && !!ppSel,
+      selName: ppSel ? ppSel.name : '', declineNote: 'You can stop anytime. If you decline, ' + (ppSel ? ppSel.name.split(' ')[0] : 'they') + ' won\u2019t be told.', selIni: ppSel ? ppIni(ppSel.name) : '', selPhoto: ppSel ? ppSel.photo || '' : '',
+      selKind: ppSel ? (ppMine ? (ppSel.kind === 'student' ? 'Student · ' + brand.school : 'Not a student') : 'Student · ' + brand.school) : '',
+      selStatus: ppSel ? (ppSel.status === 'pending' ? 'Waiting for them to accept' : ppSel.starts ? 'Starts ' + ppSel.starts + (ppSel.until ? ' · until ' + ppSel.until : '') : ppUntil(ppSel.until)) : '',
+      selNote: ppSel ? (ppMine ? (ppSel.status === 'pending' ? 'They can pick up for you once they accept.' : ppSel.kind === 'student' ? 'They can pick up your packages at the window.' : 'They can pick up your packages at the window. Staff check their photo ID.') : 'You can pick up their packages at the window with your student ID.') : '',
+      removeLabel: ppSel ? (ppMine ? (ppSel.status === 'pending' ? 'Cancel request' : 'Remove ' + ppSel.name.split(' ')[0]) : 'Stop picking up for ' + ppSel.name.split(' ')[0]) : '',
+      remove: () => {
+        if (!ppSel) return;
+        const first = ppSel.name.split(' ')[0];
+        if (ppMine) { this.setState({ sheet: null, ppSel: null, pickers: pickers.filter((x) => x !== ppSel) }); this.showToast(ppSel.status === 'pending' ? 'Request canceled' : first + ' can no longer pick up for you', 'neutral'); }
+        else { this.setState({ sheet: null, ppSel: null, pickFor: pickFor.filter((x) => x !== ppSel) }); this.showToast('You stopped picking up for ' + first, 'neutral'); }
+      },
+      reqText: ppSel ? ppSel.name.split(' ')[0] + ' wants you to pick up their packages' + (ppSel.until ? ' until ' + ppSel.until : '') + '.' : '',
+      accept: () => { if (!ppSel) return; const id = ppSel.id; this.ppAnswer(id, 'accept', () => this.setState({ pickFor: (this.state.pickFor || []).map((x) => (x.id === id ? Object.assign({}, x, { status: 'active' }) : x)) })); this.showToast('You can now pick up for ' + ppSel.name.split(' ')[0]); },
+      decline: () => { if (!ppSel) return; const id = ppSel.id; this.ppAnswer(id, 'decline', () => this.setState({ pickFor: (this.state.pickFor || []).filter((x) => x.id !== id) })); this.showToast('Request declined', 'neutral'); },
+      email: st.addEmail || '', setEmail: (v) => this.setState({ addEmail: v, addErr: '' }),
+      hasMatch: !!ppMatch && !st.addErr, matchName: ppMatch, matchIni: ppMatch ? ppIni(ppMatch) : '',
+      hasErr: !!st.addErr && f.addStudent, err: f.addStudent ? st.addErr || '' : '',
+      first: st.addFirst || '', setFirst: (v) => this.setState({ addFirst: v, addErr: '' }),
+      last: st.addLast || '', setLast: (v) => this.setState({ addLast: v, addErr: '' }),
+      firstBad: f.addGuest && st.addErr === 'first', firstErr: f.addGuest && st.addErr === 'first' ? 'Enter their first name.' : '',
+      lastBad: f.addGuest && st.addErr === 'last', lastErr: f.addGuest && st.addErr === 'last' ? 'Enter their last name.' : '',
+      untilOpts: [{ label: 'No end date', value: '' }, { label: 'Fri, Oct 23 (end of this week)', value: 'Fri, Oct 23' }, { label: 'Tue, Nov 3 (in 2 weeks)', value: 'Tue, Nov 3' }, { label: 'Fri, Dec 18 (end of term)', value: 'Fri, Dec 18' }],
+      until: st.addUntil || '', setUntil: (e) => this.setState({ addUntil: e && e.target ? e.target.value : e || '' }),
+
+      // ----- pickup dates (range) -----
+      probe: !(typeof window !== 'undefined' && window.__ppCD),
+      rangeLabel: this.ppRangeText(st.addRange),
+      // Opens with today as the start and End waiting, so the common case ("starting now, until …") is one tap.
+      openDates: () => { this.kbClose(); const r = st.addRange; this.setState({ sheet: 'ppDates', ppDraft: r || { s: this.ppToday(), e: '' }, ppEdge: r && r.e ? null : 'end', ppFocus: (r && r.s) || this.ppToday() }); },
+      datesSheet: st.sheet === 'ppDates',
+      edges: (() => {
+        const d = st.ppDraft || { s: this.ppToday(), e: '' };
+        const ring = (on) => (on ? '0 0 0 2px var(--color-border-brand)' : '0 0 0 1px var(--color-border-primary)');
+        return [
+          { label: 'Start', value: d.s === this.ppToday() ? 'Today' : this.ppFmt(d.s), fg: 'var(--color-text-primary)', on: st.ppEdge === 'start', ring: ring(st.ppEdge === 'start'), go: () => this.setState({ ppEdge: 'start', ppFocus: d.s }) },
+          { label: 'End', value: d.e ? this.ppFmt(d.e) : 'No end date', fg: d.e ? 'var(--color-text-primary)' : 'var(--color-text-placeholder)', on: st.ppEdge === 'end', ring: ring(st.ppEdge === 'end'), go: () => this.setState({ ppEdge: 'end', ppFocus: d.e || d.s }) }
+        ];
+      })(),
+      chips: [['This week', '2026-10-23'], ['2 weeks', '2026-11-03'], ['Rest of term', '2026-12-18']].map(([label, e]) => ({ label, go: () => this.setState({ ppDraft: { s: this.ppToday(), e }, ppEdge: null, ppFocus: this.ppToday() }) })),
+      calValue: st.ppDraft && st.ppDraft.s && this.ppCD(st.ppDraft.s) ? { start: this.ppCD(st.ppDraft.s), end: this.ppCD(st.ppDraft.e || st.ppDraft.s) } : null,
+      calMin: this.ppCD(this.ppToday()),
+      calFocus: this.ppCD(st.ppFocus || this.ppToday()),
+      calFocusSet: (v) => this.setState({ ppFocus: this.ppIso(v) }),
+      datesDone: () => { const d = st.ppDraft; this.setState({ sheet: null, addRange: !d || (d.s === this.ppToday() && !d.e) ? null : d }); },
+      datesOpen: () => { const d = st.ppDraft; this.setState({ sheet: null, addRange: !d || d.s === this.ppToday() ? null : { s: d.s, e: '' } }); },
+      sendStudent: () => this.ppSendStudent(), sendGuest: () => this.ppSendGuest(),
+      testEmails: ['mei.lin', 'sam.chen', 'ava.thompson'].map((u, i, a) => ({ label: u, sep: i < a.length - 1 ? ' · ' : '', fill: () => this.setState({ addEmail: u + '@northbridge.edu', addErr: '', kb: null }) }))
+    };
+
+    // ----- keyboard -----
+    const KL1 = 'qwertyuiop', KL2 = 'asdfghjkl', KL3 = 'zxcvbnm', KN1 = '1234567890', KN2 = '-/:;()$&@', KN3 = '.,?!\'"#';
+    const kcaps = st.kbShift && !st.kbNum;
+    const kkeys = (x) => x.split('').map((c) => ({ label: kcaps ? c.toUpperCase() : c, press: () => this.kbType(c) }));
+    const ksug = st.kb === 'email' ? ['@northbridge.edu', '.edu', '.com'] : st.kb === 'first' ? ['Maria', 'Linda', 'David'] : ['Lopez', 'Ellis', 'Chen'];
+    const kb = {
+      open: !!st.kb && (f.addStudent || f.addGuest),
+      sugs: ksug.map((label, i) => ({ label, rule: i ? '1px solid #B5B8BE' : '0', pick: () => { const t = this.state.kb; if (!t) return; this.kbSet(t, t === 'email' ? this.kbGet(t) + label : label); } })),
+      r1: kkeys(st.kbNum ? KN1 : KL1), r2: kkeys(st.kbNum ? KN2 : KL2), r3: kkeys(st.kbNum ? KN3 : KL3),
+      shift: () => this.setState({ kbShift: !st.kbShift }), shiftBg: kcaps ? '#FFFFFF' : '#ABB0BA', shiftGlyph: st.kbNum ? '#+=' : '⇧',
+      del: () => { const t = this.state.kb; if (t) this.kbSet(t, this.kbGet(t).slice(0, -1)); },
+      space: () => this.kbType(' '),
+      mode: () => this.setState({ kbNum: !st.kbNum }), modeLabel: st.kbNum ? 'ABC' : '123',
+      ret: () => this.kbClose(),
+      hold: (e) => { if (e && e.preventDefault) e.preventDefault(); },
+      focusEmail: () => this.kbOpen('email'), focusFirst: () => this.kbOpen('first'), focusLast: () => this.kbOpen('last'),
+      blur: () => this.kbBlur()
+    };
 
     // ----- simulate panel -----
     const close = { protoOpen: false };
@@ -2111,17 +2605,27 @@ class Component extends DCLogic {
       ['c9', '9 · Just picked up', 'Pickup complete at Window 2; items moved to Picked up'],
       ['c10', '10 · Schedule a pickup', 'Schedule pickup for Hollis Hall, Thu selected'],
       ['c11', '11 · Booked', 'Home with the Booked · Thu, Oct 22 · 4–5 PM strip on Hollis Hall'],
-      ['c12', '12 · Get a locker item', "Item details for Mom's box with locker 14B and its code"]
+      ['c12', '12 · Get a locker item', "Item details for Mom's box with locker 14B and its code"],
+      ['c13', '13 · Add a student', 'Add a student with mei.lin@northbridge.edu typed: the match shows, ready to send'],
+      ['c14', '14 · Add someone else', 'Add someone else with Maria Lopez typed, starting now until Fri, Dec 18'],
+      ['c15', '15 · Answer a pickup request', 'Home with Grace Kim’s request card and its sheet open']
     ];
     const ERRORS = [
       ['e1', '1 · Keep one item selected', 'Hollis Hall page with one item left checked, after trying to uncheck it'],
-      ['e2', '2 · Location is off', 'Pick up now with phone location off']
+      ['e2', '2 · Location is off', 'Pick up now with phone location off'],
+      ['e3', '3 · No student with that email', 'Add a student with a misspelled email, after Send request'],
+      ['e4', '4 · Already on your list', 'Add a student who already has a request from Jordan, after Send request']
     ].map(([k, l, t]) => [k, 'E' + l, t]);
     const BOOK = [['none', 'No booking', 'Jordan has not booked a time'], ['now', 'Booked window is now', 'Booked today 12–1 PM; arriving now is on time']];
     const bookKey = !bkg ? 'none' : bkg.now ? 'now' : 'later';
     const proto = {
       open: st.protoOpen, toggle: () => this.setState({ protoOpen: !st.protoOpen }),
       tabs: [['controls', 'Controls'], ['checkpoints', 'Checkpoints'], ['errors', 'Errors'], ['school', 'Customize']].map(([k, l]) => ({ label: l, on: (st.simTab || 'controls') === k, cls: (st.simTab || 'controls') === k ? 'proto-tab on' : 'proto-tab', go: () => this.setState({ simTab: k }) })),
+      pp: [
+        { label: 'Get a pickup request', tip: 'Sam Chen asks Jordan to pick up their packages until Fri, Dec 18. Tap again for Ava Thompson.', go: () => this.ppIncoming() },
+        { label: 'They accepted', tip: 'The first student still waiting on Jordan’s request accepts it', off: !(st.pickers || []).some((x) => x.status === 'pending'), go: () => { const p = (st.pickers || []).find((x) => x.status === 'pending'); if (!p) return; this.setState({ protoOpen: false, pickers: st.pickers.map((x) => (x === p ? Object.assign({}, x, { status: 'active' }) : x)) }); this.showToast(p.name.split(' ')[0] + ' accepted. They can pick up for you.'); } },
+        { label: 'Permission ended', tip: 'The end date passes for the first permission that has one (either list)', off: !(st.pickers || []).concat(st.pickFor || []).some((x) => x.until && x.status !== 'request'), go: () => { const a = (st.pickers || []).find((x) => x.until && x.status !== 'pending'); const b = (st.pickFor || []).find((x) => x.until && x.status !== 'request'); if (a) { this.setState({ protoOpen: false, pickers: st.pickers.filter((x) => x !== a) }); this.showToast(a.name.split(' ')[0] + ' can no longer pick up for you. The end date passed.', 'neutral'); } else if (b) { this.setState({ protoOpen: false, pickFor: st.pickFor.filter((x) => x !== b) }); this.showToast('You can no longer pick up for ' + b.name.split(' ')[0] + '. The end date passed.', 'neutral'); } } }
+      ],
       tabCtl: (st.simTab || 'controls') === 'controls', tabCp: st.simTab === 'checkpoints', tabErr: st.simTab === 'errors', tabSchool: st.simTab === 'school',
       // Line controls only while Jordan is in line; new-mail events stay available.
       inLine: !!q, notInLine: !q, line: mailBtns.slice(0, 3), mailNew: mailBtns.slice(3),
@@ -2160,7 +2664,7 @@ class Component extends DCLogic {
     };
 
     return {
-      ic, f, pageTitle, pushTitle, back, band, chrome, brand, me, ac,
+      ic, f, pageTitle, pushTitle, back, band, chrome, brand, me, ac, pp, kb,
       onHomeScroll: scrollAt(2), onSpotScroll: scrollAt(40),
       homeShadow: st.scrolled ? '0 1px 0 rgba(10, 13, 18, 0.08), 0 4px 12px -4px rgba(10, 13, 18, 0.18)' : 'none',
       navTitle: spotNav ? sp.titleName : pushTitle, navTitleOp: !spotNav || st.scrolled ? '1' : '0',
@@ -2192,7 +2696,7 @@ class Component extends DCLogic {
       copyCode: () => { try { navigator.clipboard.writeText((it.code || '').replace(/ /g, '')).catch(() => {}); } catch (e) {} this.showToast('Locker code copied'); },
       toast: { show: !!st.toast, text: st.toast ? st.toast.text : '', variant: st.toast ? st.toast.variant : 'success', bottom: toastBottom,
         icon: st.toast && st.toast.act === 'near' ? ic.MarkerPin01 : undefined,
-        action: st.toast && st.toast.act === 'near' ? { label: 'Check in', onPress: () => { clearTimeout(this._toastT); this.setState({ toast: null }); openSpot(baseSid)(); } } : undefined },
+        action: st.toast && st.toast.act === 'ppHide' ? { label: 'Undo', onPress: () => { const id = st.toast.id; clearTimeout(this._toastT); this.setState({ toast: null, pickFor: (this.state.pickFor || []).map((x) => (x.id === id ? Object.assign({}, x, { hidden: false }) : x)) }); } } : st.toast && st.toast.act === 'near' ? { label: 'Check in', onPress: () => { clearTimeout(this._toastT); this.setState({ toast: null }); openSpot(baseSid)(); } } : undefined },
       proto
     };
   }
