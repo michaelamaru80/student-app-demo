@@ -165,7 +165,7 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
         <div class="pp-swipe-act" style="position: absolute; top: 1px; right: 1px; bottom: 1px; width: 120px; display: flex">
           <button type="button" onClick="{{r.hide}}" tabIndex="-1" style="flex: 1 1 auto; border: 0; border-radius: 16px; background: var(--color-bg-primary-solid); color: #ffffff; font: inherit; font-size: 14px; line-height: 20px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; cursor: pointer"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-5" aria-hidden="true"></x-import>Hide request</button>
         </div>
-        <button type="button" class="row-btn pp-swipe-card" onClick="{{r.open}}" aria-label="{{r.aria}}" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px; border: 0; border-radius: 16px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary), 0 1px 2px rgba(10, 13, 18, 0.05), 0 6px 16px -6px rgba(10, 13, 18, 0.10); font: inherit; text-align: left; cursor: pointer">
+        <button type="button" class="row-btn pp-swipe-card" data-ppid="{{r.pid}}" onClick="{{r.open}}" aria-label="{{r.aria}}" style="width: 100%; display: flex; align-items: center; gap: 12px; padding: 16px; border: 0; border-radius: 16px; background: var(--color-bg-primary); box-shadow: 0 0 0 1px var(--color-border-secondary), 0 1px 2px rgba(10, 13, 18, 0.05), 0 6px 16px -6px rgba(10, 13, 18, 0.10); font: inherit; text-align: left; cursor: pointer">
           <x-import component-from-global-scope="UntitledUI.Avatar" size="md" src="{{r.photo}}" initials="{{r.ini}}" alt="{{r.name}}"></x-import>
           <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{r.name}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Wants you to pick up their packages</span></span>
           <span style="display: flex; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.ChevronRight" class="size-5" aria-hidden="true"></x-import></span>
@@ -1264,10 +1264,10 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
           <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{pp.selName}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Student · {{brand.school}}</span></span>
         </div>
         <div style="font-size: 16px; line-height: 24px; color: var(--color-text-secondary)">{{pp.reqText}}</div>
+        <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: -4px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary)"><span style="display: flex; padding-top: 2px; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-4" aria-hidden="true"></x-import></span><span>{{pp.declineNote}}</span></div>
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto">
           <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="primary" size="lg" on-press="{{pp.accept}}">Accept</x-import></div>
           <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" on-press="{{pp.decline}}">Decline</x-import></div>
-          <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: -4px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary)"><span style="display: flex; padding-top: 2px; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-4" aria-hidden="true"></x-import></span><span>{{pp.declineNote}}</span></div>
         </div>
       </div>
     </x-import>
@@ -1683,6 +1683,27 @@ class Component extends DCLogic {
     const setX = (card, x, anim) => { card.style.transition = anim && !reduce() ? 'transform 200ms cubic-bezier(.2,.8,.2,1)' : 'none'; card.style.transform = x ? 'translateX(' + x + 'px)' : ''; };
     const closeOpen = () => { if (this._ppOpenCard) { setX(this._ppOpenCard, 0, true); this._ppOpenCard = null; } };
     this._ppCloseSwipe = closeOpen;
+    // Swipe hint (hint motion), "hint until learned": each new request card, the first time it's on screen, slides ~48pt
+    // left to show the edge of "Hide request", then springs back. Stops for good once a card has been swiped open, and
+    // after 3 peeks. Reset starts over. None with reduced motion (a skipped peek still counts).
+    this._ppPeek = this._ppPeek || { seen: {}, n: 0, learned: false };
+    setInterval(() => {
+      const P = this._ppPeek;
+      if (!P || P.learned || P.n >= 3 || this._ppPeekT || sw || this._ppOpenCard) return;
+      const card = [...document.querySelectorAll('.pp-swipe-card')].find((c) => {
+        if (P.seen[c.getAttribute('data-ppid')] || !c.offsetParent) return false;
+        const r = c.getBoundingClientRect(); return r.bottom > 0 && r.top < window.innerHeight;
+      });
+      if (!card) return;
+      this._ppPeekT = setTimeout(() => {
+        this._ppPeekT = null;
+        const id = card.getAttribute('data-ppid');
+        if (P.seen[id] || P.learned || P.n >= 3 || sw || this._ppOpenCard || !card.isConnected) return;
+        P.seen[id] = true; P.n += 1;
+        if (reduce() || !card.animate) return;
+        card.animate([{ transform: 'none' }, { transform: 'translateX(-48px)', offset: 0.35 }, { transform: 'translateX(-48px)', offset: 0.55 }, { transform: 'none' }], { duration: 1100, easing: 'cubic-bezier(.2,.8,.2,1)' });
+      }, 600);
+    }, 400);
     document.addEventListener('pointerdown', (e) => {
       const card = e.target.closest && e.target.closest('.pp-swipe-card');
       if (this._ppOpenCard && !(e.target.closest && e.target.closest('.pp-swipe-act'))) { if (card === this._ppOpenCard) swEat = true; closeOpen(); return; }
@@ -1696,7 +1717,7 @@ class Component extends DCLogic {
     }, true);
     const end = (e) => {
       if (!sw) return;
-      if (sw.on) { swEat = true; const dx = e.clientX - sw.x; if (dx < -OPEN / 2) { setX(sw.card, -OPEN, true); this._ppOpenCard = sw.card; } else setX(sw.card, 0, true); }
+      if (sw.on) { swEat = true; const dx = e.clientX - sw.x; if (dx < -OPEN / 2) { setX(sw.card, -OPEN, true); this._ppOpenCard = sw.card; if (this._ppPeek) this._ppPeek.learned = true; } else setX(sw.card, 0, true); }
       sw = null;
     };
     document.addEventListener('pointerup', end, true);
@@ -2501,7 +2522,7 @@ class Component extends DCLogic {
       forRows: ppReqs.concat(ppAct).map((x, i) => ({ name: x.name, ini: ppIni(x.name), rule: i ? RULE : 'transparent', open: ppOpen(x), isReq: x.status === 'request', photo: x.photo || '', cls: st.ppLeaving === x.id && st.ppLeaveKind === 'decline' ? 'pp-leave-row' : '',
         sub: x.status === 'request' ? 'Wants you to pick up' : 'Student · ' + ppUntil(x.until) })),
       hasFor: pickFor.length > 0, noFor: pickFor.length === 0,
-      homeReqs: ppReqs.filter((x) => !x.hidden).map((x) => ({ hide: () => this.ppHide(x.id), hideAria: 'Hide ' + x.name + '\u2019s request from Home', name: x.name, ini: ppIni(x.name), photo: x.photo || '', cls: st.ppLeaving === x.id ? 'pp-leave' : '', open: ppOpen(x), aria: 'Pickup request from ' + x.name })),
+      homeReqs: ppReqs.filter((x) => !x.hidden).map((x) => ({ pid: x.id, hide: () => this.ppHide(x.id), hideAria: 'Hide ' + x.name + '\u2019s request from Home', name: x.name, ini: ppIni(x.name), photo: x.photo || '', cls: st.ppLeaving === x.id ? 'pp-leave' : '', open: ppOpen(x), aria: 'Pickup request from ' + x.name })),
       acctSub: pickers.length ? pickers.map((x) => x.name).join(', ') : 'No one yet', hasReq: ppReqs.length > 0, hidDot: ppReqs.some((x) => x.hidden), reqBadge: plural(ppReqs.length, 'request'),
       openPage: () => this.push('people'),
       openAdd: () => this.setState({ sheet: 'ppAdd', protoOpen: false }),
@@ -2660,7 +2681,7 @@ class Component extends DCLogic {
       hours: [['std', 'Hours: 10 AM–6 PM', '8 bookable hours, all on screen'], ['long', 'Hours: 7 AM–8 PM', 'Default: 13 hours, the chart swipes sideways']].map(([k, l, t]) => ({ label: l, tip: t, on: (st.mailHours || 'long') === k, go: () => this.setState({ mailHours: k, busyHour: null, protoOpen: false }) })),
       win: [[7, '5 days', 'Students can book this week only'], [14, '2 weeks', 'Two pages of open days'], [30, '30 days', 'Default: about a month of open days, 5 per page']].map(([w, l, t]) => ({ label: 'Booking window: ' + l, tip: t, on: (st.bookWin || 30) === w, go: () => this.setState({ bookWin: w, protoOpen: false }) })),
       logo: [[true, 'Logo: uploaded', 'The school’s logo shows on Home'], [false, 'Logo: none', 'No logo uploaded: initials show instead']].map(([v, l, t]) => ({ label: l, tip: t, on: st.logo === v, go: () => this.setState({ logo: v, protoOpen: false }) })),
-      reset: () => { clearTimeout(this._toastT); clearTimeout(this._locT); clearTimeout(this._noticeT); this.setState(this.fresh('full')); }
+      reset: () => { this._ppPeek = { seen: {}, n: 0, learned: false }; clearTimeout(this._toastT); clearTimeout(this._locT); clearTimeout(this._noticeT); this.setState(this.fresh('full')); }
     };
 
     return {
