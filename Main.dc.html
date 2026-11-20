@@ -1255,17 +1255,28 @@ a{color:var(--color-text-brand-secondary)}a:hover{color:var(--color-text-brand-s
     <div class="pp-cd-probe" aria-hidden="true" style="position: absolute; left: -9999px; top: 0; width: 360px; visibility: hidden; pointer-events: none"><x-import component-from-global-scope="UntitledUI.RangeCalendar" aria-label="Probe"></x-import></div>
   </sc-if>
 
-  <!-- Pickup request: same half sheet from the Home card and the Pickup people row. -->
+  <!-- Pickup request: full sheet from the Home card and the Pickup people row. Who's asking and what they want at the top
+       (large photo so you recognize them, request in large text); the reassurance sits right above the pinned buttons. -->
   <sc-if value="{{pp.reqSheet}}" hint-placeholder-val="{{false}}">
-    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Pickup request" full="{{true}}" top="{{422}}" z-index="{{60}}" on-close="{{closeSheet}}">
-      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding-bottom: 34px; font-family: Inter, sans-serif">
-        <div style="display: flex; align-items: center; gap: 12px">
-          <x-import component-from-global-scope="UntitledUI.Avatar" size="md" src="{{pp.selPhoto}}" initials="{{pp.selIni}}" alt="{{pp.selName}}"></x-import>
-          <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{pp.selName}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Student · {{brand.school}}</span></span>
+    <x-import component-from-global-scope="UntitledMobile.BottomSheet" title="Pickup request" full="{{true}}" top="{{96}}" z-index="{{60}}" on-close="{{closeSheet}}">
+      <div style="min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding-bottom: 34px; font-family: Inter, sans-serif">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center">
+          <x-import component-from-global-scope="UntitledUI.Avatar" size="2xl" src="{{pp.selPhoto}}" initials="{{pp.selIni}}" alt="{{pp.selName}}"></x-import>
+          <span><span style="display: block; font-size: 20px; line-height: 30px; font-weight: 600; color: var(--color-text-primary)">{{pp.selName}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">Student · {{brand.school}}</span></span>
         </div>
-        <div style="font-size: 16px; line-height: 24px; color: var(--color-text-secondary)">{{pp.reqText}}</div>
-        <div style="display: flex; align-items: flex-start; gap: 8px; margin-top: -4px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary)"><span style="display: flex; padding-top: 2px; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-4" aria-hidden="true"></x-import></span><span>{{pp.declineNote}}</span></div>
+        <div style="font-size: 18px; line-height: 28px; color: var(--color-text-secondary); text-align: center">{{pp.reqText}}</div>
+        <!-- What this means: only rules the prototypes already have (proxy pickup, the person present shows ID, end date). -->
+        <section aria-label="What this means" style=" display: flex; flex-direction: column; gap: 16px">
+          <div style="font-size: 14px; line-height: 20px; font-weight: 600; color: var(--color-text-tertiary)">What this means</div>
+          <sc-for list="{{pp.whatRows}}" as="w" hint-placeholder-count="3">
+            <div style="display: flex; align-items: flex-start; gap: 12px">
+              <span aria-hidden="true" style="flex: 0 0 auto; display: flex"><x-import component-from-global-scope="UntitledUI.FeaturedIcon" icon="{{w.icon}}" color="gray" theme="light" size="md"></x-import></span>
+              <span style="flex: 1 1 auto; min-width: 0"><span style="display: block; font-size: 16px; line-height: 24px; font-weight: 600; color: var(--color-text-primary)">{{w.title}}</span><span style="display: block; font-size: 14px; line-height: 20px; color: var(--color-text-tertiary)">{{w.text}}</span></span>
+            </div>
+          </sc-for>
+        </section>
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: auto">
+          <div style="margin: 0 8px 4px; font-size: 14px; line-height: 20px; font-weight: 500; color: var(--color-text-secondary); text-align: center"><span style="display: inline-flex; vertical-align: -3px; margin-right: 6px; color: var(--color-fg-quaternary)"><x-import component-from-global-scope="UntitledUI.Icons.EyeOff" class="size-4" aria-hidden="true"></x-import></span>{{pp.declineNote}}</div>
           <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="primary" size="lg" on-press="{{pp.accept}}">Accept</x-import></div>
           <div class="fullw"><x-import component-from-global-scope="UntitledUI.Button" class="w-full" color="secondary" size="lg" on-press="{{pp.decline}}">Decline</x-import></div>
         </div>
@@ -2528,7 +2539,7 @@ class Component extends DCLogic {
       openAdd: () => this.setState({ sheet: 'ppAdd', protoOpen: false }),
       pickStudent: ppStart('addStudent'), pickGuest: ppStart('addGuest'),
       addSheet: st.sheet === 'ppAdd', reqSheet: st.sheet === 'ppReq' && !!ppSel, personSheet: st.sheet === 'ppPerson' && !!ppSel,
-      selName: ppSel ? ppSel.name : '', declineNote: 'You can stop anytime. If you decline, ' + (ppSel ? ppSel.name.split(' ')[0] : 'they') + ' won\u2019t be told.', selIni: ppSel ? ppIni(ppSel.name) : '', selPhoto: ppSel ? ppSel.photo || '' : '',
+      selName: ppSel ? ppSel.name : '', declineNote: 'If you decline, ' + (ppSel ? ppSel.name.split(' ')[0] : 'they') + ' won\u2019t be told.', selIni: ppSel ? ppIni(ppSel.name) : '', selPhoto: ppSel ? ppSel.photo || '' : '',
       selKind: ppSel ? (ppMine ? (ppSel.kind === 'student' ? 'Student · ' + brand.school : 'Not a student') : 'Student · ' + brand.school) : '',
       selStatus: ppSel ? (ppSel.status === 'pending' ? 'Waiting for them to accept' : ppSel.starts ? 'Starts ' + ppSel.starts + (ppSel.until ? ' · until ' + ppSel.until : '') : ppUntil(ppSel.until)) : '',
       selNote: ppSel ? (ppMine ? (ppSel.status === 'pending' ? 'They can pick up for you once they accept.' : ppSel.kind === 'student' ? 'They can pick up your packages at the window.' : 'They can pick up your packages at the window. Staff check their photo ID.') : 'You can pick up their packages at the window with your student ID.') : '',
@@ -2539,6 +2550,11 @@ class Component extends DCLogic {
         if (ppMine) { this.setState({ sheet: null, ppSel: null, pickers: pickers.filter((x) => x !== ppSel) }); this.showToast(ppSel.status === 'pending' ? 'Request canceled' : first + ' can no longer pick up for you', 'neutral'); }
         else { this.setState({ sheet: null, ppSel: null, pickFor: pickFor.filter((x) => x !== ppSel) }); this.showToast('You stopped picking up for ' + first, 'neutral'); }
       },
+      whatRows: ppSel ? (() => { const f = ppSel.name.split(' ')[0]; return [
+        { icon: ic.Package, title: 'Pick up together', text: 'You can collect ' + f + '\u2019s packages when you pick up your own.' },
+        { icon: ic.UserSquare, title: 'Bring your own ID', text: 'Staff check your ID, not ' + f + '\u2019s.' },
+        { icon: ic.CalendarCheck01, title: ppSel.until ? 'Ends ' + ppSel.until : 'No end date', text: ppSel.until ? 'Either of you can stop sooner.' : 'Either of you can stop anytime.' }
+      ]; })() : [],
       reqText: ppSel ? ppSel.name.split(' ')[0] + ' wants you to pick up their packages' + (ppSel.until ? ' until ' + ppSel.until : '') + '.' : '',
       accept: () => { if (!ppSel) return; const id = ppSel.id; this.ppAnswer(id, 'accept', () => this.setState({ pickFor: (this.state.pickFor || []).map((x) => (x.id === id ? Object.assign({}, x, { status: 'active' }) : x)) })); this.showToast('You can now pick up for ' + ppSel.name.split(' ')[0]); },
       decline: () => { if (!ppSel) return; const id = ppSel.id; this.ppAnswer(id, 'decline', () => this.setState({ pickFor: (this.state.pickFor || []).filter((x) => x.id !== id) })); this.showToast('Request declined', 'neutral'); },
